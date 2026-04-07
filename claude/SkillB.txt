@@ -1,0 +1,232 @@
+---
+name: hr-en-travel-year-plan
+description: >
+  Concrete 52-week English plan for a Croatian adult learner using the Engleski za Tatu web app.
+  Use this skill when generating lessons, planning phase unlocks, deciding what content comes next,
+  estimating progress across the year, or mapping curriculum goals into app-ready lesson objects,
+  exercises, achievements, and review loops.
+  Prefer this skill for execution and sequencing. Use `hr-en-learning-architecture` for strategy and
+  `web-dev` for frontend, deployment, and implementation constraints.
+---
+
+# HR->EN Travel Year Plan
+
+This skill turns the curriculum into an app-ready one-year program.
+
+## Program target
+
+- Total time: about 365 hours
+- Pace: about 1 hour per day
+- Learner: Croatian adult, high motivation, near-zero English
+- End-of-year result: strong travel B1 with B2 foundations
+- Product model: static web app, gamified, mobile-friendly, Croatian interface
+
+## Program structure
+
+| Phase | Weeks | Hours | Target |
+|------|-------|-------|--------|
+| 1 | 1-14 | about 100 | A1 survival |
+| 2 | 15-32 | about 120 | A2 travel independence |
+| 3 | 33-46 | about 100 | B1a independent communication |
+| 4 | 47-52 | about 45 | B1b confidence and B2 foundation |
+
+## Daily session template
+
+Use this unless there is a special review day.
+
+| Time | Focus |
+|------|-------|
+| 0-15 min | SRS review plus a small number of new items |
+| 15-30 min | listening or pronunciation |
+| 30-50 min | lesson or exercise block |
+| 50-60 min | low-pressure input or short review |
+
+Rules:
+
+- keep the daily target visibly achievable
+- avoid sessions longer than 60-70 minutes
+- if motivation drops, switch to scenario practice instead of more theory
+- weekends may be lighter, but consistency should not break
+
+## Phase goals
+
+### Phase 1: A1 survival
+
+End result:
+
+- greets people
+- orders food
+- checks in at a hotel
+- asks for directions
+- handles numbers and basic money
+
+Priority lesson themes:
+
+1. greetings and politeness
+2. airport basics
+3. hotel check-in
+4. restaurant basics
+5. directions
+6. money and shopping basics
+7. basic health and pharmacy
+
+### Phase 2: A2 travel independence
+
+End result:
+
+- describes past events simply
+- makes and changes plans
+- handles delays and mistakes
+- shops, complains politely, solves small problems
+
+Priority lesson themes:
+
+1. past trip stories
+2. transport and tickets
+3. changing plans
+4. complaints and fixes
+5. shopping and sizes
+6. health and emergencies
+
+### Phase 3: B1a independent communication
+
+End result:
+
+- speaks about life and experiences
+- expresses preferences and opinions
+- handles longer conversations on familiar topics
+- follows the gist of familiar native speech
+
+Priority lesson themes:
+
+1. have you ever...?
+2. present perfect vs past simple
+3. opinions and recommendations
+4. indirect questions
+5. travel storytelling
+6. phrasal verbs in context
+
+### Phase 4: B1b confidence and B2 foundation
+
+End result:
+
+- uses core travel English with much less hesitation
+- writes short messages and complaints
+- understands more natural listening input
+- is ready to continue toward B2 after year 1
+
+Priority lesson themes:
+
+1. full scenario roleplay review
+2. weak-point repair
+3. confidence speaking
+4. listening push
+5. review sweep of phases 1-3
+
+## App mapping: lesson object design
+
+The current app in `engleski/js/data.js` already provides a practical lesson schema.
+When creating or expanding lessons, keep this structure:
+
+- `id`
+- `title`
+- `subtitle`
+- `icon`
+- `locked`
+- `context`
+- `culturalTip`
+- `phrases[]`
+- `exercises[]`
+
+Each phrase should include:
+
+- `id`
+- `en`
+- `hr`
+- `phonetic`
+- `phoneticHr`
+- `tip`
+- `difficulty`
+
+Each lesson should feel like a mini travel scene, not a grammar chapter.
+
+## Lesson-writing rules for this app
+
+1. A lesson should usually contain 5-8 phrases.
+2. Every phrase should be sayable out loud by a beginner.
+3. Exercises should mix listening, recognition, and active recall.
+4. Cultural tips should reduce friction in the UK, not add trivia.
+5. The first lessons must over-index on confidence and politeness.
+6. New lessons should reuse earlier words where possible.
+7. Locked lessons should unlock in a clear, motivational order.
+
+## Recommended lesson backlog
+
+Use this as the product roadmap before adding more advanced material.
+
+1. Osnovni Pozdravi
+2. Na Aerodromu
+3. U Hotelu
+4. U Restoranu
+5. Pitam za Put
+6. Kupnja i Plaćanje
+7. U Vlaku ili Autobusu
+8. Problem sa Sobom / Rezervacijom
+9. Ljekarna i Hitne Situacije
+10. Vrijeme i Small Talk
+11. Opis Putovanja u Proslom Vremenu
+12. Planovi i Rezervacije
+13. Zalbe i Rjesavanje Problema
+14. Razgovor i Misljenje
+
+## Exercise mix by level
+
+### A1
+
+- listen and choose
+- match pairs
+- simple situation choice
+- short repeat-aloud prompts
+
+### A2
+
+- more situations
+- spelling and typing
+- error spotting
+- short booking and complaint scenarios
+
+### B1
+
+- tense contrast drills
+- indirect question conversion
+- short opinion writing
+- longer roleplay sequences
+
+## Unlock logic
+
+Use simple, visible gates.
+
+- one lesson should unlock the next
+- review should remain always available
+- achievements should reward streaks, first completions, and scenario mastery
+- phase gates should require completion, not perfection
+
+## Progress expectations
+
+Use these checkpoints for product messaging.
+
+- around 100 hours: "You can survive common travel situations."
+- around 220 hours: "You can handle travel more independently."
+- around 320 hours: "You can explain, ask, and narrate with more confidence."
+- around 365 hours: "You are functional, independent, and ready to keep improving."
+
+## Content QA checklist
+
+- Is this lesson useful on a real trip?
+- Would the learner plausibly say these lines in the UK?
+- Is the Croatian explanation simpler than the English?
+- Are we teaching too much at once?
+- Does the exercise set include at least one active task?
+- Does this fit the current app schema without extra engineering?
+
+For UI, technical implementation, deployment constraints, browser feature fallbacks, and static-hosting rules, use the companion `web-dev` skill.

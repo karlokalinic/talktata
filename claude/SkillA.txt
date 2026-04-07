@@ -1,0 +1,513 @@
+---
+name: hr-en-learning-architecture
+description: >
+  Strategic curriculum and pedagogy reference for Croatian native speakers learning English as adults.
+  Use this skill when deciding what to teach first, how to sequence grammar and vocabulary,
+  which Croatian-specific errors to target, how to estimate CEFR progression, and how to review
+  whether lesson content is age-appropriate, travel-relevant, and actually useful.
+  Prefer this skill for strategy, curriculum logic, lesson QA, and exercise selection.
+  Use the companion `hr-en-travel-year-plan` skill for the concrete 52-week program and the
+  companion `web-dev` skill for implementation details inside the app.
+---
+
+# HR->EN Learning Architecture
+
+This skill defines the teaching logic behind the product.
+
+The core question is not "how do we explain English completely?" but "what helps a Croatian adult
+with near-zero English become functional, confident, and travel-capable as fast as possible?"
+
+## Target learner
+
+- Native language: Croatian
+- Starting level: near-zero English
+- Age band: roughly 55-70
+- Goal: independent travel and everyday conversation
+- Study mode: self-study in a web app, no teacher required
+- Motivation style: practical, emotionally tied to travel, family, and real-life usefulness
+
+## Non-negotiables
+
+1. Travel usefulness beats textbook completeness.
+2. Vocabulary and phrases matter more than abstract grammar early on.
+3. Croatian UI and explanations are a feature, not a shortcut.
+4. Every lesson must reduce anxiety in a real scenario.
+5. Sessions should feel short, clear, and winnable.
+6. Repetition is required; novelty alone does not create retention.
+
+## Outcome ranges
+
+Use these ranges when setting expectations.
+
+| Level | Realistic learner result |
+|------|---------------------------|
+| A1 | survives greetings, money, food, hotel, directions |
+| A2 | handles routine travel independently |
+| B1 | narrates, explains, asks for help, manages problems |
+| B2 foundation | speaks more comfortably, understands familiar native speech, keeps improving after year 1 |
+
+For this product, a strong year-one result is solid B1 with B2 foundations, not full B2 mastery.
+
+## Teaching order
+
+Teach in this order unless there is a strong reason not to.
+
+### Phase 1 priorities
+
+- survival phrases
+- numbers, money, time
+- hotel and restaurant language
+- "please", "thank you", "excuse me"
+- articles from the start
+- pronunciation confidence for a small core set of phrases
+
+### Phase 2 priorities
+
+- past simple for simple storytelling
+- future plans and bookings
+- routine problems: delay, wrong room, lost item, pharmacy
+- collocations such as "make a reservation" and "take a taxi"
+
+### Phase 3 priorities
+
+- present perfect vs past simple
+- opinions and preferences
+- indirect questions
+- phrasal verbs tied to travel and movement
+
+### Phase 4 priorities
+
+- fluency under mild pressure
+- confidence in long roleplays
+- listening to more natural speech
+- review and consolidation of weak points
+
+## What to deprioritize
+
+Do not front-load these.
+
+- deep grammar terminology
+- rare vocabulary
+- essay writing
+- idioms without travel or everyday value
+- exhaustive tense coverage at beginner stage
+- grammar rules detached from scenario use
+
+## Croatian-specific error ladder
+
+### Teach from day 1
+
+- missing articles: "I want coffee" -> "I want a coffee"
+- `a` vs `an`
+- double negatives
+- direct Croatian phrase transfer such as "Hear you later"
+- `w` and `th` pronunciation
+
+### Introduce at A2 and drill at B1
+
+- countable vs uncountable nouns
+- indirect question order
+- present perfect vs past simple
+- adjective vs adverb confusion
+- preposition mismatch
+
+### Teaching principle
+
+Correct these errors in recurring micro-exercises, not once in a long explanation.
+
+## Exercise design rules
+
+Use a mix of recognition, recall, and production.
+
+| Exercise type | Best use |
+|--------------|----------|
+| listen and choose | early comprehension, confidence, low friction |
+| match pairs | phrase recognition and quick repetition |
+| situation choice | real-world judgment and scenario transfer |
+| spelling/typing | active recall |
+| repeat aloud | pronunciation confidence |
+| roleplay | motivation and fluency |
+| error fixing | Croatian-specific interference |
+
+## Content design rules
+
+When writing lesson content:
+
+1. Prefer full phrases over isolated words.
+2. Keep English output short enough to repeat aloud.
+3. Give Croatian explanations in plain language, not academic terms.
+4. Attach each phrase to a real scene: airport, hotel, restaurant, pharmacy, bus, small talk.
+5. Recycle high-value structures repeatedly across lessons.
+6. Introduce grammar as a tool for a need, never as a chapter for its own sake.
+7. Add one cultural note where it helps behavior, politeness, or confidence.
+
+## Review checklist for new content
+
+Use this checklist before accepting a lesson or feature idea.
+
+- Does it solve a real travel or daily-life need?
+- Is the wording short enough for a beginner to say aloud?
+- Is the Croatian explanation clearer than the English itself?
+- Does it target at least one common Croatian mistake if relevant?
+- Can the learner earn a quick win within 5-10 minutes?
+- Would a 60-year-old beginner understand the task without extra help?
+
+## Product implications
+
+This skill should push the app toward:
+
+- phrase-first learning
+- high-frequency repetition
+- visible progress
+- scenario-based motivation
+- gentle, low-shame correction
+- short, successful daily sessions
+
+For the concrete one-year sequence, use the companion `hr-en-travel-year-plan` skill.
+For app implementation, UI, data structure, and deployment rules, use the companion `web-dev` skill.---
+name: hr-en-curriculum
+description: >
+  Structured curriculum and methodology for Croatian native speakers learning English from zero.
+  Covers all six CEFR levels (A1–C2), daily schedules, time estimates, exercises, completion criteria,
+  and Croatian-specific error patterns to target. Use this skill whenever the user asks how to teach
+  English to a Croatian speaker, what exercises to use, how to build an English learning app for
+  Croatians, how long it takes to reach any CEFR level, or how to balance grammar/vocabulary/listening
+  for a Croatian learner. Always use this skill when building or designing any language-learning product
+  targeting Croatian speakers — even if the user only asks "what should my dad learn first."
+---
+ 
+# HR→EN Curriculum Skill
+ 
+This skill answers: **how does a Croatian adult with zero English knowledge reach functional travel
+fluency (B2) in the shortest evidence-based time?** It provides a complete phase-by-phase curriculum,
+daily schedules, exercise types, time estimates, and a list of Croatian-specific errors to target.
+ 
+Designed for:
+- Adults (50–70 age range) with high motivation but no prior English
+- Self-study + app-based context
+- Goal: independent travel fluency (B2) as primary target
+ 
+---
+ 
+## QUICK REFERENCE: CEFR levels & time estimates for Croatian→English self-study
+ 
+Croatian is an FSI Category III language for English speakers (1,100 hours). The **reverse** — a Croatian
+speaker learning English — is somewhat easier because English has far less morphological complexity.
+Expect **~800–1,100 total hours** for a motivated adult self-learner to reach B2 via app + practice.
+ 
+> **Rule of thumb:** FSI classroom hours × 1.5–2.0 = self-study hours for an adult without a teacher.
+> Adults 55+ should budget ~15% more time, but motivation overrides age in most studies.
+ 
+| Level | Description | Cumulative hours* | Daily 30 min → calendar time |
+|-------|-------------|-------------------|------------------------------|
+| A1    | Survival phrases, numbers, basic greetings | 80–120 h | ~6–9 months |
+| A2    | Simple travel, shopping, directions | +150–180 h | +10–14 months |
+| B1    | Independent travel, simple conversations | +200–250 h | +13–17 months |
+| B2    | Comfortable travel, discussing plans/feelings | +250–350 h | +17–23 months |
+| C1    | Near-native comprehension, professional use | +350–450 h | +23–30 months |
+| C2    | Mastery | +400–600 h | +27–40 months |
+ 
+*Cumulative from zero. Each row adds to the previous total.
+ 
+**Primary target: B2 in ~600–900 total self-study hours.**
+At 30 min/day × 7 days: ~3.5–5 years. At 1 hour/day: ~2–2.5 years. At 1.5 hours/day: ~1.5 years.
+ 
+---
+ 
+## PHASE 1: A1 — Survival Foundation (0–120 hours)
+ 
+**What the learner can do:** Introduce themselves, count, understand and use ~300 core words,
+survive in a hotel or restaurant in English-speaking countries.
+ 
+### Daily schedule (30–45 min)
+- **10 min** — Anki/SRS flashcards (new words + review)
+- **10 min** — Pronunciation drilling (audio → repeat)
+- **10 min** — Structured exercise (see below)
+- **5 min** — Listening to native English for pleasure (YouTube, TV, no pressure to understand)
+ 
+### Core vocabulary targets (A1)
+Learn words in **thematic clusters**, not alphabetically:
+1. Numbers 1–100
+2. Days, months, time expressions
+3. Greetings & farewells
+4. Family members
+5. Food & drink (restaurant survival)
+6. Hotel & accommodation
+7. Directions & transport
+8. Body + health (I feel sick, where is the hospital)
+9. Colours, sizes, basic adjectives
+10. Common verbs: be, have, go, want, need, like, understand, speak, eat, drink
+ 
+**Target: ~300–500 words by end of A1.**
+ 
+### Grammar scaffolding (A1 — explicit, minimal)
+Introduce grammar **only** when it enables a new communication function.
+Do NOT teach all tenses at once.
+ 
+| Grammar point | Introduce when... |
+|---------------|-------------------|
+| Present simple (I am, I have) | Day 1 — needed for any sentence |
+| Articles (a, an, the) | Week 2 — CRITICAL for Croatian speakers |
+| There is / There are | Week 3 |
+| Present continuous (I am eating) | Week 4 |
+| Numbers + How much/How many | Week 3 |
+| Basic questions (What? Where? How much?) | Week 3 |
+| Negation (I don't, I'm not, There isn't) | Week 4 |
+ 
+### Exercises (A1)
+1. **Phrase drilling** — Listen to a native phrase, repeat aloud 3×, then use in a fake dialogue
+2. **Fill-in articles** — "I want ___ coffee. I want ___ table. ___ hotel is nice." (targets #1 Croatian error)
+3. **Picture naming** — See a hotel room image, name every object in English
+4. **Dialogue roleplay** — "You are at the airport. Ask for your gate." (Claude or app plays receptionist)
+5. **Translation in chunks** — Never translate word-for-word; translate whole phrases
+ 
+### Completion criteria (A1 ✓)
+- Can introduce themselves and spell their name
+- Can order food and pay in a restaurant
+- Can ask for and understand directions (left, right, straight ahead, far, near)
+- Can check in/out of a hotel
+- Can count and handle basic money exchanges
+- Vocabulary recognition: ~500 words (passive), ~200 words (active production)
+ 
+---
+ 
+## PHASE 2: A2 — Travel Basics (120–300 hours total)
+ 
+**What the learner can do:** Handle most routine travel situations, understand simple written signs
+and menus, communicate needs with help from the listener.
+ 
+### Daily schedule (45–60 min)
+- **15 min** — SRS vocabulary review + 10 new words
+- **10 min** — Listening comprehension (A2-level audio with transcript)
+- **15 min** — Grammar exercises
+- **10 min** — Speaking/writing exercise
+- **5 min** — Pleasure input (English TV/YouTube, still no pressure)
+ 
+### Core vocabulary targets (A2)
+- Expand to ~1,000–1,200 words
+- **Priority domains:** travel, transport, health, shopping, weather, asking for help, time planning
+- Introduce **collocations** (words that go together): *make a reservation, take a taxi, check the weather*
+ 
+### Grammar scaffolding (A2)
+| Grammar point | Introduce when... |
+|---------------|-------------------|
+| Past simple (I went, I ate) | A2 start — needed for storytelling |
+| Future (I will, I'm going to) | A2 mid |
+| Modal verbs: can, must, should, would | A2 mid — travel essential |
+| Comparative adjectives (bigger, more expensive) | A2 mid |
+| Question words in reported speech | A2 late — targets Croatian error pattern |
+| Countable vs uncountable nouns | A2 late — targets Croatian error pattern |
+| Prepositions of time and place | A2 ongoing |
+ 
+### Exercises (A2)
+1. **Dialogue completion** — Fill in the missing half of a hotel/airport conversation
+2. **Situation cards** — "Your flight is delayed. You need a hotel for one night. Explain to staff."
+3. **Error spotting** — Show 5 sentences with typical Croatian mistakes; find and fix them
+4. **Simple reading** — English menus, signs, short texts; answer comprehension questions
+5. **Tense sorting** — Given a story in Croatian, translate it to English choosing correct tense
+ 
+### Completion criteria (A2 ✓)
+- Can describe a past trip in simple sentences
+- Can make and cancel reservations (hotel, restaurant, transport)
+- Can ask for help and understand instructions
+- Can handle unexpected travel problems (lost luggage, wrong train)
+- Vocabulary: ~1,200 words passive, ~500 active
+ 
+---
+ 
+## PHASE 3: B1 — Independent Traveler (300–550 hours total)
+ 
+**What the learner can do:** Navigate any travel situation independently, express opinions and feelings,
+understand the main point of conversations even if not every word.
+ 
+### Daily schedule (60 min)
+- **15 min** — SRS (review + 15 new words, focus on collocations and phrasal verbs)
+- **15 min** — Listening (B1 podcasts, short YouTube, graded readers with audio)
+- **15 min** — Speaking practice (describe, explain, narrate)
+- **15 min** — Reading + writing
+ 
+### Core vocabulary targets (B1)
+- Expand to ~2,000–2,500 words
+- Begin learning **phrasal verbs** in topic clusters (travel: *check in, check out, get on, get off, run out of*)
+- Begin idioms that are travel-relevant (*it's up to you, never mind, by the way, on time, in time*)
+ 
+### Grammar scaffolding (B1)
+| Grammar point | Introduce when... |
+|---------------|-------------------|
+| Present perfect (I have been, I have eaten) | B1 start — huge Croatian gap |
+| Conditionals (If I have time, I will...) | B1 mid |
+| Passive voice (The room was cleaned) | B1 mid |
+| Phrasal verbs (systematic) | B1 ongoing |
+| Indirect questions (Can you tell me where the station is?) | B1 late — targets Croatian error |
+| Adjective order | B1 mid |
+ 
+### Exercises (B1)
+1. **Opinion expression** — "You visited a bad hotel. Write a 5-sentence review." (forces past + opinions)
+2. **Listening for gist** — Watch a 2-min YouTube video, summarise in 3 sentences
+3. **Phrasal verb story** — Fill in phrasal verbs in a travel narrative
+4. **Present perfect vs past simple** — Highly targeted exercises (Croatian speakers confuse these constantly)
+5. **Cultural note card** — One English idiom/expression per day with context, not just translation
+ 
+### Completion criteria (B1 ✓)
+- Can narrate a travel story with past, present, and future tenses correctly
+- Can handle unexpected situations (illness, emergencies, complaints)
+- Can express preferences, opinions, and recommendations
+- Can understand the main point of native-speed speech if topic is familiar
+- Vocabulary: ~2,500 words passive, ~1,200 active
+ 
+---
+ 
+## PHASE 4: B2 — Comfortable Communication (550–900 hours total)
+ 
+**Primary goal — this is the target level for the project.**
+ 
+**What the learner can do:** Converse naturally with native speakers, understand most TV/film with
+subtitles, read standard English texts, discuss travel plans in detail, handle any realistic travel scenario.
+ 
+### Daily schedule (60–90 min)
+- **20 min** — Native content consumption (real TV, films, podcasts — no graded materials)
+- **20 min** — Active vocabulary building (collocations, idioms, register differences)
+- **20 min** — Production: writing and speaking
+- **10–30 min** — Grammar revision of weak points
+ 
+### Core vocabulary targets (B2)
+- Expand to ~4,000–5,000 words
+- Focus on **register awareness** (formal vs. informal vs. British vs. American)
+- Phrasal verbs: ~200 common ones
+- Idioms: ~100 travel/everyday idioms
+ 
+### Grammar scaffolding (B2)
+| Grammar point | Introduce when... |
+|---------------|-------------------|
+| All conditionals (0, 1, 2, 3, mixed) | B2 start |
+| Reporting verbs (suggest, recommend, warn) | B2 start |
+| Cleft sentences, emphasis | B2 mid |
+| Discourse markers (Actually, Having said that, On the other hand) | B2 ongoing |
+ 
+### Completion criteria (B2 ✓)
+- Can hold a 10-minute conversation with a native speaker on an unfamiliar topic
+- Can understand most of a film or TV episode without subtitles
+- Can write a clear email, complaint, or request
+- Can discuss cultural differences and personal opinions fluently
+- Vocabulary: ~5,000 words passive, ~2,500 active
+ 
+---
+ 
+## CROATIAN-SPECIFIC ERROR PATTERNS — High Priority
+ 
+These are the errors Croatian speakers make most frequently in English. Address them **early and often.**
+Source: documented patterns in Croatian EFL research + native-speaker observation.
+ 
+### Tier 1 — Critical (teach from Day 1)
+| Error pattern | Example mistake | Correct | Root cause |
+|--------------|-----------------|---------|------------|
+| Missing articles | "I want coffee from waiter" | "I want **a** coffee from **the** waiter" | Croatian has no articles |
+| a/an confusion | "I need a umbrella" | "I need **an** umbrella" | Croatian has no articles |
+| Few vs. a few | "I have few friends here" (negative!) | "I have **a few** friends" | False equivalence with "malo" |
+| Double negation | "I don't know nothing" | "I don't know **anything**" | Croatian uses double negatives |
+| Word order in indirect questions | "I don't know where **is** the station" | "I don't know where the station **is**" | Croatian inversion habit |
+| Hear you later | "Hear you later!" | "**See** you later!" / "Speak to you later!" | Direct translation of "Čujemo se" |
+ 
+### Tier 2 — Important (teach at A2–B1)
+| Error pattern | Example mistake | Correct | Root cause |
+|--------------|-----------------|---------|------------|
+| Countable nouns used as uncountable | "I have informations" / "Give me advices" | "I have **information**" / "Give me **advice**" | Different countability in Croatian |
+| Adjective used as adverb | "He played **good**" | "He played **well**" | Croatian allows adjectival predication more freely |
+| "did" + past participle | "I didn't **heard** you" | "I didn't **hear** you" | Overcorrection/analogy error |
+| How does he look like | "**How** does he look like?" | "**What** does he look like?" | Direct Croatian translation of "Kako izgleda?" |
+| Preposition errors | "I'm good **in** English" | "I'm good **at** English" | Prepositions don't map 1:1 |
+| Wrong question word order | "**Where** you are going?" | "Where **are** you going?" | Croatian SVO can skip inversion |
+ 
+### Tier 3 — Pronunciation (teach from A1 alongside vocabulary)
+| Sound | Problem | Fix |
+|-------|---------|-----|
+| **th** (voiced/unvoiced) | Pronounced as *d* or *t* ("dis" vs "this") | Tongue-between-teeth drill: "the, this, that, three, through" |
+| **w** vs **v** | Croatian has only "v"; w sounds like v | Lip-rounding drill: "water, wine, winter, want, work" |
+| **h** (initial) | Often dropped or over-aspirated | Light breath exercise: "hotel, hello, hungry, happy" |
+| Short vs long vowels | "ship" vs "sheep" confused | Minimal pair practice: ship/sheep, live/leave, bit/beat |
+| Word stress | Stress placed wrong (Croatian stress patterns) | Mark stress in new vocabulary from Day 1 |
+ 
+---
+ 
+## METHODOLOGY PRINCIPLES (evidence-based)
+ 
+### 1. Comprehensible Input First (Krashen's i+1)
+The learner must understand ~95% of what they hear/read for acquisition to occur. Always choose
+materials slightly above current level — not too easy, not too hard.
+- A1 → use graded readers, A1 YouTube channels, slow-speed audio
+- A2–B1 → use graded audio, BBC Learning English, simple films with subtitles
+- B2+ → native content with context support
+ 
+### 2. Vocabulary over Grammar in Early Stages
+For a Croatian speaker, English grammar is simpler than their L1 in most ways (no cases, no aspect,
+no grammatical gender for most purposes). **Vocabulary is the bottleneck, not grammar.**
+- A1–A2: 70% vocabulary, 30% grammar
+- B1–B2: 50/50
+- C1+: 30% vocabulary, 70% fluency/register
+ 
+### 3. Spaced Repetition System (SRS)
+Use Anki or equivalent. New words decay rapidly without review. SRS schedules reviews at optimal
+intervals. This is the most evidence-backed vocabulary technique available.
+- Learn 10–15 new words/day
+- Always include audio pronunciation in flashcards
+- Learn words in example sentences (context), never naked word + translation
+ 
+### 4. Productive Practice Ratio
+For every 2 hours of input (reading/listening), do 30 minutes of output (speaking/writing).
+Output reveals fossilized errors; input alone doesn't fix them.
+ 
+### 5. Short Daily Sessions > Long Weekly Sessions
+30 minutes every day > 3.5 hours once a week. Sleep consolidates language.
+For a 60+ adult: 20–45 min sessions are optimal. Never push past fatigue.
+ 
+### 6. Motivation and Relevance
+Always anchor exercises to the real goal: **travelling in English-speaking countries.**
+- Use real hotel booking sites, real airline apps, real menus
+- Role-play real scenarios the learner is likely to encounter
+- Connect new vocabulary to travel destinations they want to visit
+ 
+---
+ 
+## GAMIFICATION HOOKS (for web app integration)
+ 
+These are learning mechanics that can be gamified in a web app:
+ 
+| Mechanic | Game element | What it teaches |
+|----------|-------------|-----------------|
+| Daily streak | Streak counter + flame icon | Habit formation |
+| XP per completed session | Points + level bar | Session completion |
+| Phase unlock | Locked levels (A1→A2 requires checkpoint) | Progression + completion criteria |
+| Error badge | "You fixed 5 article errors this week" | Targeted error awareness |
+| Travel scenario | Interactive roleplay with branching dialogue | Speaking + comprehension |
+| Vocabulary streak | "You've seen this word 8 times — you own it" | SRS completion feedback |
+| Map unlock | Complete A2 → unlock "London travel mode" | Motivational milestone |
+| Daily challenge | "Today's challenge: order a meal in 5 sentences" | Production push |
+| Listening challenge | Clip from real film/TV, answer 3 questions | Comprehensible input with accountability |
+ 
+---
+ 
+## RECOMMENDED MATERIALS BY PHASE
+ 
+| Phase | Materials |
+|-------|-----------|
+| A1 | Anki (free), BBC Learning English A1, YouTube: "English with Lucy" A1 playlist |
+| A2 | Anki, British Council LearnEnglish app, "Easy English" YouTube, Oxford Bookworms Starter |
+| B1 | LingQ (graded readers), 6 Minute English (BBC), Oxford Bookworms 2–3, Duolingo Stories |
+| B2 | Netflix (subtitles off), real books/articles, English language news (BBC Simple), podcasts |
+ 
+---
+ 
+## FOR THE APP DEVELOPER (web app integration brief)
+ 
+When designing the app based on this curriculum:
+1. **Map each exercise type to a phase** — don't show B1 content to an A1 learner
+2. **Pronunciation exercises need audio** — always use native speaker audio, never TTS alone
+3. **SRS engine is mandatory** — schedule vocabulary review algorithmically, not randomly
+4. **Article drills are highest priority** — this is the #1 error and easiest to gamify
+5. **Indirect question drills** — second priority; can be done as error-fixing game
+6. **Role-play scenarios** — the most motivating exercise type; should be in every phase
+7. **Progress is measured in hours + CEFR descriptors**, not just points
+8. **Session length: 20–45 min max** — optimized for 55–70 age group
+ 
+For the full gamification implementation layer, see the companion `web-dev` skill.
+ 

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalkTata — KarloLegend</title>
+    <meta name="description" content="Interaktivni tečaj engleskog jezika za početnike. Od nule do razgovora.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f5f0e8">
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  BOOT SCREEN — BIOS Aesthetic                      -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="boot-screen">
+        <canvas id="boot-particles"></canvas>
+        <div class="boot-glow"></div>
+
+        <!-- Phase 1: Terminal boot lines -->
+        <div class="boot-terminal" id="boot-terminal"></div>
+
+        <!-- Phase 2: Logo + Profile Select + Start (appears after terminal) -->
+        <div class="boot-main hidden" id="boot-main">
+            <img src="icons/logo.svg" alt="TalkTata" class="boot-logo" id="boot-logo">
+            <div class="boot-title" id="boot-title"></div>
+            <div class="boot-tagline" id="boot-tagline">Od nule do razgovora</div>
+
+            <!-- Profile selector -->
+            <div class="profile-select" id="profile-select">
+                <div class="profile-slots" id="profile-slots"></div>
+            </div>
+
+            <div class="boot-start" id="boot-start">
+                Klikni za početak <span class="boot-cursor">|</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  MAIN APP                                          -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="app" class="hidden">
+
+        <!-- AMBIENT PARTICLE CANVAS -->
+        <canvas id="particle-canvas"></canvas>
+
+        <!-- HEADER -->
+        <header id="app-header">
+            <div class="header-left">
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Izbornik">☰</button>
+                <h1 class="app-logo"><img src="icons/logo.svg" alt="TalkTata" class="logo-svg"> TalkTata</h1>
+            </div>
+            <div class="header-right">
+                <div class="header-stat" title="Bodovi iskustva">
+                    <span class="stat-icon">⭐</span>
+                    <span class="stat-value" id="header-xp">0</span>
+                    <span class="stat-label">XP</span>
+                </div>
+                <div class="header-stat" title="Dani zaredom">
+                    <span class="stat-icon">🔥</span>
+                    <span class="stat-value" id="header-streak">0</span>
+                    <span class="stat-label">dana</span>
+                </div>
+                <div class="header-stat" title="Razina">
+                    <span class="stat-icon">🏆</span>
+                    <span class="stat-value" id="header-level">1</span>
+                    <span class="stat-label">razina</span>
+                </div>
+                <div class="header-stat" title="Novčići">
+                    <span class="stat-icon">🪙</span>
+                    <span class="stat-value" id="header-coins">0</span>
+                    <span class="stat-label">novčići</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar">
+            <nav class="sidebar-nav">
+                <button class="sidebar-btn active" data-view="dashboard" data-tooltip="Početna">
+                    <span class="sb-icon">🏠</span> Početna
+                </button>
+                <button class="sidebar-btn" data-view="review" data-tooltip="Ponavljanje">
+                    <span class="sb-icon">🔄</span> Ponavljanje
+                </button>
+                <button class="sidebar-btn" data-view="achievements" data-tooltip="Postignuća">
+                    <span class="sb-icon">🏅</span> Postignuća
+                </button>
+                <button class="sidebar-btn" data-view="watching-guide" data-tooltip="Filmovi">
+                    <span class="sb-icon">🎬</span> Filmovi
+                </button>
+                <button class="sidebar-btn" data-view="help" data-tooltip="Pomoć">
+                    <span class="sb-icon">❓</span> Pomoć
+                </button>
+                <button class="sidebar-btn" data-view="about" data-tooltip="O metodi">
+                    <span class="sb-icon">🧠</span> O metodi
+                </button>
+                <button class="sidebar-btn" data-view="resources" data-tooltip="Resursi">
+                    <span class="sb-icon">🔗</span> Resursi
+                </button>
+                <button class="sidebar-btn" data-view="settings" data-tooltip="Postavke">
+                    <span class="sb-icon">⚙️</span> Postavke
+                </button>
+                <button class="sidebar-btn" data-view="activity-log" data-tooltip="Dnevnik">
+                    <span class="sb-icon">📊</span> Dnevnik
+                </button>
+                <button class="sidebar-btn" data-view="marketplace" data-tooltip="Trgovina">
+                    <span class="sb-icon">🪙</span> Trgovina
+                </button>
+            </nav>
+            <div class="sidebar-collapse-area">
+                <button id="sidebar-collapse-btn" class="sidebar-collapse-btn" title="Smanji izbornik">❮</button>
+            </div>
+            <div class="sidebar-footer">
+                <div class="xp-bar-container">
+                    <div class="xp-bar-label">
+                        Razina <span id="sidebar-level">1</span>
+                    </div>
+                    <div class="xp-bar">
+                        <div class="xp-bar-fill" id="sidebar-xp-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="xp-bar-text">
+                        <span id="sidebar-xp">0</span> / <span id="sidebar-xp-next">100</span> XP
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main id="main-content">
+
+            <!-- BREADCRUMBS -->
+            <nav id="breadcrumbs" class="breadcrumbs" aria-label="navigacija"></nav>
+
+            <!-- ═══ DASHBOARD ═══ -->
+            <section id="view-dashboard" class="view">
+                <div class="view-inner">
+                    <div class="welcome-card">
+                        <h2 class="welcome-title">Dobro došli! 👋</h2>
+                        <p class="welcome-text" id="welcome-text">
+                            Spremni za učenje? Danas ćemo naučiti korisne fraze za vaš put u Ameriku.
+                        </p>
+                    </div>
+
+                    <div class="daily-goal-card" id="daily-goal">
+                        <div class="daily-goal-icon">🎯</div>
+                        <div class="daily-goal-info">
+                            <h3>Dnevni cilj</h3>
+                            <p>Završite jednu lekciju ili ponovite 10 fraza</p>
+                        </div>
+                        <div class="daily-goal-progress">
+                            <div class="mini-progress">
+                                <div class="mini-progress-fill" id="daily-progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">📚 Vaše Lekcije</h3>
+                    <div class="lesson-grid" id="dashboard-lessons"></div>
+
+                    <div id="my-modules-section" class="hidden">
+                        <h3 class="section-title">🧠 Moji Moduli</h3>
+                        <div class="my-modules-grid"></div>
+                    </div>
+
+                    <div id="cultural-tip" class="tip-card">
+                        <div class="tip-icon">💡</div>
+                        <div class="tip-content">
+                            <h4>Kulturni savjet</h4>
+                            <p id="tip-text">Amerikanci uvijek kažu "please" i "thank you". Ali i puno "awesome!", "sure!", "you bet!" — sve su to pozitivne fraze.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ LESSON VIEW (Phrases) ═══ -->
+            <section id="view-lesson" class="view hidden">
+                <div class="view-inner">
+                    <div class="lesson-header">
+                        <button class="back-btn" id="lesson-back">← Natrag</button>
+                        <div class="lesson-progress-bar">
+                            <div class="lesson-progress-fill" id="lesson-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="lesson-counter" id="lesson-counter">1 / 8</span>
+                    </div>
+
+                    <div class="lesson-context" id="lesson-context"></div>
+
+                    <div class="phrase-card" id="phrase-card">
+                        <div class="phrase-en" id="phrase-en"></div>
+                        <div class="phrase-hr" id="phrase-hr"></div>
+                        <div class="phrase-phonetic" id="phrase-phonetic"></div>
+                        <div class="phrase-tip" id="phrase-tip"></div>
+                        <div class="phrase-actions">
+                            <button class="btn btn-play" id="btn-play" title="Slušaj normalno">
+                                🔊 Slušaj
+                            </button>
+                            <button class="btn btn-play-slow" id="btn-play-slow" title="Slušaj sporije">
+                                🐢 Sporije
+                            </button>
+                            <button class="btn btn-record" id="btn-record" title="Snimi svoj izgovor">
+                                🎤 Pokušaj izgovoriti
+                            </button>
+                        </div>
+                        <div class="phrase-feedback hidden" id="phrase-feedback"></div>
+                    </div>
+
+                    <div class="lesson-nav">
+                        <button class="btn btn-secondary btn-large" id="btn-prev-phrase">← Prethodna</button>
+                        <button class="btn btn-primary btn-large" id="btn-next-phrase">Sljedeća →</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ EXERCISE VIEW ═══ -->
+            <section id="view-exercise" class="view hidden">
+                <div class="view-inner">
+                    <div class="exercise-header">
+                        <button class="back-btn" id="exercise-back">← Natrag</button>
+                        <div class="exercise-progress-bar">
+                            <div class="exercise-progress-fill" id="exercise-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="exercise-counter" id="exercise-counter">1 / 4</span>
+                    </div>
+
+                    <div class="exercise-instruction" id="exercise-instruction"></div>
+
+                    <!-- Listen & Choose -->
+                    <div class="exercise-body" id="exercise-body"></div>
+
+                    <div class="exercise-feedback hidden" id="exercise-feedback"></div>
+
+                    <div class="exercise-nav">
+                        <button class="btn btn-primary btn-large hidden" id="btn-next-exercise">
+                            Sljedeće pitanje →
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ RESULTS VIEW ═══ -->
+            <section id="view-results" class="view hidden">
+                <div class="view-inner results-content">
+                    <div class="results-icon" id="results-icon">🎉</div>
+                    <h2 class="results-title" id="results-title">Čestitke!</h2>
+                    <p class="results-subtitle" id="results-subtitle"></p>
+
+                    <div class="results-score-ring">
+                        <svg viewBox="0 0 120 120" class="score-svg">
+                            <circle cx="60" cy="60" r="50" class="score-bg"/>
+                            <circle cx="60" cy="60" r="50" class="score-fill" id="score-ring"
+                                    stroke-dasharray="314" stroke-dashoffset="314"/>
+                        </svg>
+                        <div class="score-text" id="score-text">0%</div>
+                    </div>
+
+                    <div class="results-stats" id="results-stats"></div>
+
+                    <div class="results-actions">
+                        <button class="btn btn-primary btn-large" id="btn-results-continue">
+                            Nastavi →
+                        </button>
+                        <button class="btn btn-secondary" id="btn-results-retry">
+                            🔄 Ponovi vježbe
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ REVIEW (SRS) VIEW ═══ -->
+            <section id="view-review" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">🔄 Ponavljanje</h2>
+                    <p class="view-desc" id="review-desc">Ponovite fraze koje ste naučili. Redovito ponavljanje je ključ pamćenja!</p>
+                    <div id="review-content"></div>
+                    <div class="review-empty hidden" id="review-empty">
+                        <div class="empty-icon">✅</div>
+                        <p>Nema fraza za ponavljanje danas. Svaka čast!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ ACHIEVEMENTS VIEW ═══ -->
+            <section id="view-achievements" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">🏅 Postignuća</h2>
+                    <p class="view-desc">Vaše nagrade i postignuća na putu učenja.</p>
+                    <div class="achievement-grid" id="achievement-grid"></div>
+                </div>
+            </section>
+
+            <!-- ═══ WATCHING GUIDE VIEW ═══ -->
+            <section id="view-watching-guide" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">🎬 Vodič za filmove i serije</h2>
+                    <p class="view-desc">Naučite engleski gledajući filmove i serije — provjerena metoda u 4 faze.</p>
+                    <div id="watching-guide-content" class="watching-guide"></div>
+                </div>
+            </section>
+
+            <!-- ═══ HELP VIEW ═══ -->
+            <section id="view-help" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">❓ Kako koristiti</h2>
+                    <div class="help-content">
+                        <div class="help-card">
+                            <h3>📖 Lekcije</h3>
+                            <p>Svaka lekcija sadrži korisne fraze za vaš put. Kliknite na lekciju da počnete. Slušajte frazu, ponovite je naglas, pa pritisnite "Sljedeća".</p>
+                        </div>
+                        <div class="help-card">
+                            <h3>🔊 Slušanje</h3>
+                            <p>Pritisnite <strong>"Slušaj"</strong> da čujete frazu na engleskom. Pritisnite <strong>"Sporije"</strong> za sporiji izgovor. Možete slušati koliko god puta želite!</p>
+                        </div>
+                        <div class="help-card">
+                            <h3>🎤 Izgovor</h3>
+                            <p>Pritisnite <strong>"Pokušaj izgovoriti"</strong> i recite frazu naglas. Računalo će pokušati prepoznati vaš izgovor i dati vam ocjenu.</p>
+                        </div>
+                        <div class="help-card">
+                            <h3>📝 Vježbe</h3>
+                            <p>Nakon što prođete sve fraze, slijede vježbe: slušanje, spajanje parova, situacije i pisanje. Svaki točan odgovor donosi bodove!</p>
+                        </div>
+                        <div class="help-card">
+                            <h3>🔄 Ponavljanje</h3>
+                            <p>Vraćajte se i ponavljajte stare fraze. Sustav pamti što ste naučili i predlaže što trebate ponoviti.</p>
+                        </div>
+                        <div class="help-card">
+                            <h3>⭐ Bodovi i razine</h3>
+                            <p>Svaki točan odgovor donosi XP bodove. Skupljajte bodove, podižite razine i otkrijte postignuća!</p>
+                        </div>
+                        <div class="help-card">
+                            <h3>📋 Vodič za početnike</h3>
+                            <p>Ako trebate ponovni pregled aplikacije, pokrenite interaktivni vodič.</p>
+                            <button class="btn btn-primary" id="restart-tutorial" style="margin-top:8px;">🔄 Pokreni vodič</button>
+                        </div>
+                        <div class="help-card">
+                            <h3>💾 Sigurnosna kopija i instalacija</h3>
+                            <p>Možete preuzeti (export) svoj napredak kao JSON datoteku ili ga ponovno učitati (import) ako promijenite uređaj.</p>
+                            <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                                <button class="btn btn-primary" id="export-progress">Preuzmi napredak</button>
+                                <input type="file" id="import-progress-file" accept="application/json" style="display:none;" />
+                                <button class="btn btn-secondary" id="import-progress-btn">Učitaj napredak</button>
+                                <button class="btn btn-primary hidden" id="install-app">Instaliraj aplikaciju</button>
+                            </div>
+                            <p style="margin-top:8px; color:var(--text-dim); font-size:var(--fs-sm);">Ako vaš preglednik ne podržava snimanje glasa, koristite gumb za uvoz/izvoz kao rezervnu opciju.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ ACTIVITY LOG VIEW ═══ -->
+            <section id="view-activity-log" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">📊 Dnevnik aktivnosti</h2>
+                    <p class="view-desc">Pregled svih vaših aktivnosti u aplikaciji.</p>
+                    <div style="margin-bottom:1rem; display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn btn-primary" id="export-activity-log">📥 Preuzmi dnevnik</button>
+                        <button class="btn btn-secondary" id="clear-activity-log">🗑️ Obriši dnevnik</button>
+                    </div>
+                    <div id="activity-log-content" class="activity-log-content"></div>
+                </div>
+            </section>
+
+            <!-- ═══ ABOUT (O METODI) VIEW ═══ -->
+            <section id="view-about" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">🧠 Zašto interaktivno učenje?</h2>
+                    <p class="view-desc">Ova aplikacija koristi dokazane metode učenja jezika iz kognitivne psihologije i neurolingvistike.</p>
+
+                    <div class="about-grid">
+                        <div class="about-card">
+                            <div class="about-card-icon">📥</div>
+                            <h3>Krashenova Input Hipoteza</h3>
+                            <p>Jezik se usvaja kad je input "i+1" — malo iznad trenutne razine. Naše lekcije su graduirane od osnovnih pozdrava do složenijih razgovora, uvijek korak po korak.</p>
+                            <a href="https://hr.wikipedia.org/wiki/Stephen_Krashen" target="_blank" rel="noopener" class="about-link">📖 Više na Wikipediji</a>
+                        </div>
+
+                        <div class="about-card">
+                            <div class="about-card-icon">🧠</div>
+                            <h3>Dual-Coding teorija (Paivio)</h3>
+                            <p>Kad koristite i riječi i slike/zvukove istovremeno, mozak stvara DVA memorijska traga umjesto jednog. Zato imamo audio, vizualne vježbe i tekst zajedno.</p>
+                            <a href="https://hr.wikipedia.org/wiki/Dvostruko_kodiranje" target="_blank" rel="noopener" class="about-link">📖 Više na Wikipediji</a>
+                        </div>
+
+                        <div class="about-card">
+                            <div class="about-card-icon">📝</div>
+                            <h3>Testing Effect (Roediger & Karpicke)</h3>
+                            <p>Testiranje NIJE samo provjera znanja — ono je UČENJE. Svaka vježba pojačava pamćenje 2–3x više nego samo čitanje. Zato imamo 19 vrsta vježbi.</p>
+                            <a href="https://en.wikipedia.org/wiki/Testing_effect" target="_blank" rel="noopener" class="about-link">📖 Testing Effect (eng.)</a>
+                        </div>
+
+                        <div class="about-card">
+                            <div class="about-card-icon">🔄</div>
+                            <h3>Spaced Repetition (Ebbinghaus/Leitner)</h3>
+                            <p>Ponavljanje u rastućim intervalima je najučinkovitiji način za dugoročno pamćenje. Naš SRS sustav automatski planira kad ponoviti svaku frazu.</p>
+                            <a href="https://hr.wikipedia.org/wiki/Krivulja_zaboravljanja" target="_blank" rel="noopener" class="about-link">📖 Krivulja zaboravljanja</a>
+                        </div>
+
+                        <div class="about-card">
+                            <div class="about-card-icon">🗣️</div>
+                            <h3>Motor Learning (shadowing)</h3>
+                            <p>Ponavljanje naglas (shadowing) angažira motoričku memoriju. Mišići usta i jezika "pamte" kako se proizvode zvukovi — isto kao učenje bicikliranja.</p>
+                            <a href="https://en.wikipedia.org/wiki/Speech_shadowing" target="_blank" rel="noopener" class="about-link">📖 Speech Shadowing (eng.)</a>
+                        </div>
+
+                        <div class="about-card">
+                            <div class="about-card-icon">💪</div>
+                            <h3>Desirable Difficulties (Bjork)</h3>
+                            <p>Težina koja USPORAVA učenje kratkoročno POJAČAVA ga dugoročno. Zato su neke vježbe namjerno izazovne — to je dokaz da učite, ne greška.</p>
+                            <a href="https://en.wikipedia.org/wiki/Desirable_difficulty" target="_blank" rel="noopener" class="about-link">📖 Desirable Difficulty (eng.)</a>
+                        </div>
+                    </div>
+
+                    <div class="about-summary">
+                        <h3>📊 Što kažu istraživanja?</h3>
+                        <ul>
+                            <li><strong>Roediger & Karpicke (2006)</strong> — Studenti koji su se testirali zapamtili su 50% više nego oni koji su samo čitali.</li>
+                            <li><strong>Cepeda et al. (2006)</strong> — Spaced repetition daje 10–30% bolje rezultate od massed practice.</li>
+                            <li><strong>Paivio (1991)</strong> — Dvojno kodiranje (tekst + slika) poboljšava prepoznavanje za do 80%.</li>
+                            <li><strong>Hamada (2016)</strong> — Shadowing značajno poboljšava razumijevanje i izgovor kod L2 učenika.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ RESOURCES VIEW ═══ -->
+            <section id="view-resources" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">🔗 Korisni resursi</h2>
+                    <p class="view-desc">Dodatni materijali za učenje engleskog — na hrvatskom jeziku i besplatni.</p>
+
+                    <div class="resources-grid">
+                        <div class="resource-category">
+                            <h3>🎥 YouTube kanali (na hrvatskom)</h3>
+                            <div class="resource-list">
+                                <a href="https://www.youtube.com/@EngleskiHrvatski" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">▶️</span>
+                                    <div>
+                                        <div class="resource-title">Engleski za Hrvate</div>
+                                        <div class="resource-desc">Lekcije engleskog s objašnjenjima na hrvatskom</div>
+                                    </div>
+                                </a>
+                                <a href="https://www.youtube.com/@BBCLearningEnglish" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">▶️</span>
+                                    <div>
+                                        <div class="resource-title">BBC Learning English</div>
+                                        <div class="resource-desc">Besplatne lekcije od BBC-ja — kratke i jasne</div>
+                                    </div>
+                                </a>
+                                <a href="https://www.youtube.com/@EnglishwithLucy" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">▶️</span>
+                                    <div>
+                                        <div class="resource-title">English with Lucy</div>
+                                        <div class="resource-desc">Popularne lekcije za početnike i srednju razinu</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="resource-category">
+                            <h3>📚 Besplatni online tečajevi</h3>
+                            <div class="resource-list">
+                                <a href="https://www.duolingo.com/course/en/hr/Learn-English" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">🦉</span>
+                                    <div>
+                                        <div class="resource-title">Duolingo (HR→EN)</div>
+                                        <div class="resource-desc">Besplatni tečaj engleskog s hrvatskim sučeljem</div>
+                                    </div>
+                                </a>
+                                <a href="https://learnenglish.britishcouncil.org/" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">🇬🇧</span>
+                                    <div>
+                                        <div class="resource-title">British Council — Learn English</div>
+                                        <div class="resource-desc">Službeni materijali za učenje engleskog</div>
+                                    </div>
+                                </a>
+                                <a href="https://www.usa.gov/learn-english" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">🇺🇸</span>
+                                    <div>
+                                        <div class="resource-title">USA.gov — Learn English</div>
+                                        <div class="resource-desc">Službeni američki resursi za učenje engleskog</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="resource-category">
+                            <h3>📖 Rječnici i alati</h3>
+                            <div class="resource-list">
+                                <a href="https://hr.glosbe.com/en/hr" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">📖</span>
+                                    <div>
+                                        <div class="resource-title">Glosbe EN→HR rječnik</div>
+                                        <div class="resource-desc">Englesko-hrvatski rječnik s primjerima u rečenicama</div>
+                                    </div>
+                                </a>
+                                <a href="https://youglish.com/" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">🔊</span>
+                                    <div>
+                                        <div class="resource-title">YouGlish</div>
+                                        <div class="resource-desc">Čujte kako se STVARNO izgovaraju riječi u kontekstu</div>
+                                    </div>
+                                </a>
+                                <a href="https://forvo.com/" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">🎤</span>
+                                    <div>
+                                        <div class="resource-title">Forvo</div>
+                                        <div class="resource-desc">Izgovor svake engleske riječi od izvornih govornika</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="resource-category">
+                            <h3>✈️ Za putovanje u SAD</h3>
+                            <div class="resource-list">
+                                <a href="https://www.fluentu.com/blog/english/english-for-travelers/" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">✈️</span>
+                                    <div>
+                                        <div class="resource-title">FluentU — English for Travelers</div>
+                                        <div class="resource-desc">Fraze i savjeti za putovanje na engleskom</div>
+                                    </div>
+                                </a>
+                                <a href="https://www.bbc.co.uk/learningenglish/english/course/lower-intermediate" target="_blank" rel="noopener" class="resource-item">
+                                    <span class="resource-icon">📻</span>
+                                    <div>
+                                        <div class="resource-title">BBC Lower Intermediate</div>
+                                        <div class="resource-desc">Tečaj za početnike s audio materijalima</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ SETTINGS VIEW ═══ -->
+            <section id="view-settings" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">⚙️ Postavke</h2>
+                    <p class="view-desc">Prilagodite aplikaciju svojim potrebama.</p>
+                    <div class="settings-grid">
+
+                        <div class="settings-card">
+                            <h3>🌙 Izgled</h3>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Tamni način rada</div>
+                                    <div class="setting-desc">Manje svjetla, ugodnije za oči navečer</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="setting-dark-mode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Veličina teksta</div>
+                                    <div class="setting-desc">Prilagodite veličinu za lakše čitanje</div>
+                                </div>
+                                <div class="font-size-btns">
+                                    <button class="font-size-btn" data-size="small">A</button>
+                                    <button class="font-size-btn active" data-size="medium">A</button>
+                                    <button class="font-size-btn" data-size="large">A+</button>
+                                    <button class="font-size-btn" data-size="xlarge">A++</button>
+                                </div>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Visoki kontrast</div>
+                                    <div class="setting-desc">Jače boje za bolju čitljivost</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="setting-high-contrast">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>🔊 Zvuk i izgovor</h3>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Brzina izgovora</div>
+                                    <div class="setting-desc">Podesite koliko brzo se izgovaraju fraze</div>
+                                </div>
+                                <div class="setting-range">
+                                    <input type="range" id="setting-tts-speed" min="0.5" max="1.5" step="0.1" value="1.0">
+                                    <span class="setting-range-value" id="tts-speed-value">1.0×</span>
+                                </div>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Zvučni efekti</div>
+                                    <div class="setting-desc">Zvukovi kod klikanja i odgovora</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="setting-sfx" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Animirane čestice</div>
+                                    <div class="setting-desc">Plutajuće čestice u pozadini</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="setting-particles" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">🎤 Mikrofon</div>
+                                    <div class="setting-desc">Omogućite snimanje izgovora (traži dozvolu preglednika)</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="setting-mic" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>💾 Podaci</h3>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Preuzmi napredak</div>
+                                    <div class="setting-desc">Spremite JSON kopiju svog napretka</div>
+                                </div>
+                                <button class="btn btn-secondary" id="settings-export">📥 Export</button>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Učitaj napredak</div>
+                                    <div class="setting-desc">Vratite napredak iz JSON datoteke</div>
+                                </div>
+                                <div>
+                                    <input type="file" id="settings-import-file" accept="application/json" style="display:none;">
+                                    <button class="btn btn-secondary" id="settings-import">📤 Import</button>
+                                </div>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Resetiraj napredak</div>
+                                    <div class="setting-desc">Obriši sve podatke i počni ispočetka</div>
+                                </div>
+                                <button class="btn btn-secondary" id="settings-reset" style="color:var(--rose);">🗑️ Resetiraj</button>
+                            </div>
+                            <div class="setting-row">
+                                <div>
+                                    <div class="setting-label">Resetiraj trenutnu lekciju</div>
+                                    <div class="setting-desc">Obriši spremljeni napredak unutar lekcije/vježbe (ako ste zapeli)</div>
+                                </div>
+                                <button class="btn btn-secondary" id="settings-reset-lesson">🔄 Resetiraj lekciju</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ MARKETPLACE VIEW ═══ -->
+            <section id="view-marketplace" class="view hidden">
+                <div class="view-inner">
+                    <h2 class="view-title">🪙 Trgovina znanja</h2>
+                    <p class="view-desc">Potrošite novčiće na trikove i bonus lekcije. Vaši novčići: <strong id="marketplace-coins">0</strong> 🪙</p>
+                    <div id="marketplace-content"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  TOAST NOTIFICATIONS                               -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="toast-container"></div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  ACHIEVEMENT MODAL                                 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="achievement-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <div class="modal-badge" id="modal-badge">🏅</div>
+            <h2 class="modal-title" id="modal-title">Postignuće!</h2>
+            <p class="modal-desc" id="modal-desc"></p>
+            <div class="modal-xp" id="modal-xp"></div>
+            <button class="btn btn-primary btn-large" id="modal-close">Nastavi →</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  CONFETTI CANVAS                                   -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  SCRIPTS                                           -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

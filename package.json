@@ -1,0 +1,58 @@
+{
+  "name": "talktata",
+  "version": "1.0.0",
+  "description": "Interaktivni tečaj engleskog jezika za početnike — TalkTata",
+  "main": "electron/main.js",
+  "author": "KarloLegend",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "build:portable": "electron-builder --win portable",
+    "build:installer": "electron-builder --win nsis",
+    "build:all": "electron-builder --win nsis portable",
+    "publish": "electron-builder --win --publish always"
+  },
+  "build": {
+    "appId": "com.karlolegend.talktata",
+    "productName": "TalkTata",
+    "copyright": "Copyright © 2026 KarloLegend",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "engleski/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "engleski/icons/icon-256.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TalkTata",
+      "installerLanguages": ["en_US"],
+      "language": "1033"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "TVOJ_GITHUB_USERNAME",
+      "repo": "talktata"
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

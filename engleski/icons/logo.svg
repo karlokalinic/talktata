@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c17b4a"/>
+      <stop offset="100%" stop-color="#c9a84c"/>
+    </linearGradient>
+    <linearGradient id="bridge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#ffd700" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#fff" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bg)" rx="96"/>
+  <!-- Speech bubble left (HR) -->
+  <g transform="translate(90,100)">
+    <rect x="0" y="0" width="130" height="90" rx="18" fill="#fff" opacity="0.95"/>
+    <polygon points="50,90 70,120 80,90" fill="#fff" opacity="0.95"/>
+    <text x="65" y="58" font-size="42" fill="#c17b4a" text-anchor="middle" font-family="Georgia,serif" font-weight="700">HR</text>
+  </g>
+  <!-- Speech bubble right (EN) -->
+  <g transform="translate(292,100)">
+    <rect x="0" y="0" width="130" height="90" rx="18" fill="#fff" opacity="0.95"/>
+    <polygon points="50,90 60,120 80,90" fill="#fff" opacity="0.95"/>
+    <text x="65" y="58" font-size="42" fill="#2b6cb0" text-anchor="middle" font-family="Georgia,serif" font-weight="700">EN</text>
+  </g>
+  <!-- Bridge arc connecting them -->
+  <path d="M180,180 Q256,240 332,180" stroke="url(#bridge)" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <circle cx="256" cy="218" r="12" fill="#ffd700"/>
+  <!-- App name -->
+  <text x="256" y="310" font-size="72" fill="#fff" text-anchor="middle" font-family="Georgia,serif" font-weight="700" letter-spacing="2">Talk</text>
+  <text x="256" y="380" font-size="72" fill="#ffd700" text-anchor="middle" font-family="Georgia,serif" font-weight="700" letter-spacing="2">Tata</text>
+  <!-- Tagline -->
+  <text x="256" y="430" font-size="22" fill="#fff" text-anchor="middle" font-family="sans-serif" opacity="0.8" letter-spacing="3">OD NULE DO RAZGOVORA</text>
+</svg>

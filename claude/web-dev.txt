@@ -1,0 +1,172 @@
+---
+name: web-dev
+description: >
+  Frontend, UX, architecture, and deployment rules for the Engleski za Tatu app.
+  Use this skill whenever changing HTML, CSS, JavaScript, lesson data, gamification, accessibility,
+  browser API usage, mobile behavior, or hosting. This skill is specifically grounded in the current
+  `engleski` folder, which is the real app. Prefer this skill when implementing features, improving
+  the interface for an older Croatian learner, or making the site deploy cleanly to Vercel, Netlify,
+  Cloudflare Pages, GitHub Pages, or any other static host.
+---
+
+# Web Dev Skill
+
+This skill exists to keep the app simple, deployable, and actually usable by the target learner.
+
+## Project facts
+
+- The real app lives in `engleski/`.
+- The stack is plain HTML, CSS, and JavaScript.
+- There is no build step and no framework.
+- `engleski/js/data.js` defines the global `CURRICULUM` object.
+- `engleski/js/app.js` depends on `CURRICULUM`, so `data.js` must load before `app.js`.
+- App state is persisted in `localStorage` under `engleski_za_tatu_v1`.
+- Text-to-speech uses the browser speech synthesis API.
+- Speech recognition is optional and browser-dependent.
+
+## Product priorities
+
+Always optimize for the real user first:
+
+- Croatian-speaking dad
+- beginner English level
+- older learner, likely mobile usage
+- low tolerance for confusing navigation
+- strong need for clear wins and low-friction repetition
+
+This means:
+
+- large tap targets
+- obvious navigation
+- simple wording
+- minimal hidden state
+- high contrast
+- no cluttered screens
+- no feature that requires setup before first value
+
+## Engineering rules
+
+1. Keep the app statically deployable.
+2. Avoid introducing a backend unless explicitly required.
+3. Avoid framework migration unless explicitly requested.
+4. Prefer extending the existing `CURRICULUM` data model over inventing parallel data flows.
+5. Preserve relative asset paths so the app can run from a subfolder.
+6. Gracefully degrade when speech APIs are unavailable.
+7. Never make microphone input a hard requirement.
+8. Keep content and interface text in Croatian unless asked otherwise.
+
+## Architecture guidance
+
+### Data
+
+- Lesson content belongs in `engleski/js/data.js`.
+- Application behavior belongs in `engleski/js/app.js`.
+- Styling belongs in `engleski/css/style.css`.
+
+Do not scatter lesson data into HTML markup.
+
+### State
+
+Persist only what is needed for progress:
+
+- XP
+- level
+- streak
+- completed lessons
+- heard or learned phrases
+- achievements
+- SRS state
+
+If adding new progress state, make sure old saves fail safely.
+
+### Browser APIs
+
+- TTS is a nice default, but voice availability varies by device.
+- STT often requires Chromium-based browsers and secure context.
+- HTTPS matters for microphone features on deployed environments.
+- When a browser API is missing, provide a fallback interaction instead of an error wall.
+
+## UX rules for this app
+
+### For lessons
+
+- one clear task per screen
+- avoid long paragraphs during the active learning flow
+- keep phrase cards prominent
+- always show where the learner is in the lesson
+
+### For exercises
+
+- reveal correctness clearly
+- keep the next action obvious
+- reward progress quickly
+- do not punish mistakes harshly
+
+### For review
+
+- review should feel lighter than a lesson
+- surface what is due today
+- use repetition to build confidence, not guilt
+
+## Content-to-code mapping
+
+When asked to add content, prefer:
+
+1. new lesson objects in `data.js`
+2. minimal rendering changes in `app.js` only if the existing exercise types cannot support the need
+3. CSS updates only when the new UI element is actually necessary
+
+Do not redesign the whole architecture to add one lesson.
+
+## Deployment rules
+
+The app must be hostable on free static infrastructure.
+
+Primary requirement:
+
+- the repository root should open the app or send the user into `engleski/` cleanly
+
+Hosting expectations:
+
+- Vercel: static deploy from repository root is acceptable
+- Netlify: publish repository root
+- Cloudflare Pages: no build command required
+- GitHub Pages: root deployment or docs-style static deployment should work
+
+Avoid features that depend on:
+
+- server-side rendering
+- a database
+- private APIs
+- paid hosting features
+- custom binaries or build tools for basic usage
+
+## Definition of done for any app change
+
+- The app still works as a plain static site.
+- `engleski/index.html` remains the main entry point.
+- Relative CSS and JS paths still resolve.
+- `data.js` still loads before `app.js`.
+- The UI remains understandable for a Croatian beginner.
+- Mobile behavior is not worse than before.
+- Missing microphone support does not block learning.
+- Local progress still persists or fails safely.
+
+## Preferred improvements
+
+If improving the product, prioritize this order:
+
+1. more useful lessons
+2. better review and SRS behavior
+3. clearer progress feedback
+4. stronger accessibility and mobile ergonomics
+5. smoother deployment and static-host support
+6. only then broader technical refactors
+
+## Example prompts
+
+- Add a new lesson in `engleski/js/data.js` for ordering food in a pub.
+- Improve the review screen so due phrases are clearer for a 60+ learner.
+- Make the app easier to use on mobile without changing the data model.
+- Add deploy-safe root entry behavior so the app works on Vercel from the repo root.
+- Add a new exercise type only if the current four types cannot support the learning goal.

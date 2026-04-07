@@ -1,0 +1,30 @@
+**Short recommendation:** keep the app as a static website hosted (Vercel/Netlify/Cloudflare Pages/GitHub Pages) and add PWA + local-export/import. It gives the best balance: zero-install for your dad, HTTPS for speech APIs, offline/installable behavior, simple hosting and updates — and you can add a native wrapper later if you need a true .exe.
+
+- **Static site (hosted) — Recommended:**  
+  - Pros: easy to deploy (free hosts + automatic HTTPS), simple to update (push to GitHub → immediate live update), works on phone/desktop, low maintenance, privacy-friendly (data stays local).  
+  - Cons: client-side only (no built-in cloud sync), speech recognition requires HTTPS, need to add PWA/service-worker for offline install-like experience.  
+  - Implementation wins: add manifest.json + service worker, use IndexedDB/localStorage for SRS, and add an export/import JSON backup button. Host on Vercel/Netlify/Cloudflare Pages for free HTTPS.
+
+- **Local static (run on localhost):**  
+  - Pros: fully local, no hosting cost.  
+  - Cons: not practical for a non-technical user — they’d need to run a server (e.g., `python -m http.server 8000`) or you’d have to set it up for them.
+
+- **Dynamic web app (backend + DB):**  
+  - Pros: cloud sync across devices, server-side backups, richer analytics and features.  
+  - Cons: more work (auth, backend, hosting costs, security, maintenance). Only worth it if you need multi-device sync or central progress collection.
+
+- **Native installer / .exe:**  
+  - Pros: single-click for the user, stores data in AppData, works offline without browser quirks.  
+  - Cons: packaging, auto-updates, code signing, antivirus/trust issues, multiplatform complexity, much more engineering and release overhead. Better to postpone until the product is stable. Quick alternatives: generate a desktop wrapper with Nativefier (fast but heavy) or later build a proper Tauri/Electron app.
+
+- **Data & reliability:**  
+  - For local-first approach: store SRS/XP in IndexedDB (or localStorage for small data) and provide an explicit `Export progress` / `Import progress` JSON file so your dad can back up or you can restore his progress.  
+  - For STT: production requires HTTPS; browsers restrict mic access to secure contexts.
+
+- **Suggested next step (practical):**  
+  1. Deploy the current static site to Vercel/Netlify (instant HTTPS).  
+  2. Add PWA support (manifest + service worker) for offline caching and “Install app” behavior.  
+  3. Implement export/import of user state (JSON) and fallback UI when STT is not available.  
+  4. If you still want a desktop .exe later, create a tested PWA-first workflow then package using Nativefier or build a Tauri/Electron app as a follow-up.
+
+If you want, I can implement step 1–3 now: add PWA/service-worker + export/import and deploy to a free static host. Which option do you want me to start with?
