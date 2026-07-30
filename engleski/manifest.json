@@ -2,7 +2,7 @@
   "name": "TalkTata — KarloLegend",
   "short_name": "TalkTata",
   "description": "Interaktivni tečaj engleskog jezika za početnike. Od nule do razgovora.",
-  "start_url": "./index.html",
+  "start_url": "./bootstrap.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
