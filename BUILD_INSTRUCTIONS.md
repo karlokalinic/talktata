@@ -1,157 +1,127 @@
-# 🛠️ TalkTata — Build & Auto-Update Upute
+# TalkTata — build, installer i ažuriranja
 
-## A) PRVI PUT: Setup + prvi build
+TalkTata ima dva načina rada:
 
-### Zahtjevi (instaliraj jednom)
+- statična web-aplikacija iz mape `engleski/`
+- Windows desktop aplikacija pakirana kroz Electron i NSIS
 
-1. **Node.js** — preuzmi s https://nodejs.org (LTS verzija, 64-bit)
-   - Na instalaciji: klikni "Next" na sve, potvrdi "Add to PATH"
-   - Provjeri: otvori Command Prompt → `node --version`
+Mikrofon, prepoznavanje govora, glasovno čitanje i zvučni efekti dodatne su mogućnosti. Nijedna od njih nije potrebna za prolazak lekcija.
 
-2. **GitHub account** — napravi na https://github.com
-   - Kreiraj **Personal Access Token** (PAT) za publishanje:
-     1. GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
-     2. "Generate new token (classic)"
-     3. Ime: `talktata-publish`
-     4. Scope: označi **`repo`** (cijeli checkbox)
-     5. "Generate token" → **KOPIRAJ TOKEN** (vidjet ćeš ga samo jednom!)
+## Zahtjevi
 
-3. **Kreiraj GitHub repo**:
-   1. https://github.com/new → ime: `talktata`, Public, Create
-   2. Otvori PowerShell u `karlolegend/engleski/`:
-   ```powershell
-   cd c:\Users\kalinika\Documents\karlolegend\engleski
-   git init
-   git add .
-   git commit -m "TalkTata v1.0.0"
-   git remote add origin https://github.com/TVOJ_USERNAME/talktata.git
-   git branch -M main
-   git push -u origin main
-   ```
+- Windows 10 ili noviji za testiranje instalera
+- Node.js 20 ili noviji
+- Git
 
-4. **Uredi package.json** — zamijeni `TVOJ_GITHUB_USERNAME` svojim username-om:
-   ```json
-   "publish": {
-     "provider": "github",
-     "owner": "TVOJ_GITHUB_USERNAME",
-     "repo": "talktata"
-   }
-   ```
-
----
-
-### Korak 1: Konvertiraj ikonu u PNG (jednom)
-
-electron-builder zahtijeva PNG ikonu (min 256×256).
-
-- Otvori `engleski\icons\logo.svg` u Chrome → screenshot (Win+Shift+S)
-- Paint → Paste → Resize 256×256 → Save As → `engleski\icons\icon-256.png`
-
-Ili iz terminala: `magick engleski\icons\logo.svg -resize 256x256 engleski\icons\icon-256.png`
-
----
-
-### Korak 2: Install + Build + Publish
+Provjera verzije Nodea:
 
 ```powershell
-cd c:\Users\kalinika\Documents\karlolegend\engleski
+node --version
+npm --version
+```
+
+## Lokalna provjera izvornog koda
+
+Iz korijena repozitorija:
+
+```powershell
 npm install
-$env:GH_TOKEN = "TVOJ_GITHUB_PAT_TOKEN_OVDJE"
-npm run publish
+npm run check
 ```
 
-Ovo radi:
-- Pakira aplikaciju u Electron
-- Kreira NSIS installer (.exe)
-- **Upload-a .exe + latest.yml na GitHub Releases automatski!**
+`npm run check` provjerava:
 
-Output: `dist/TalkTata Setup 1.0.0.exe`
+- postoje li sve datoteke potrebne aplikaciji i installeru
+- jesu li JSON i JavaScript datoteke sintaktički ispravne
+- podudaraju li se verzije
+- postoje li lokalni resursi koje HTML učitava
+- uključuje li paket Electron runtime, web-aplikaciju, compatibility layer i ikonu
 
----
-
-### Korak 3: Pošalji tati PRVI .exe
-
-1. Pronađi: `dist/TalkTata Setup 1.0.0.exe` (~80-100 MB)
-2. Pošalji tati preko Google Drive / WeTransfer / OneDrive
-3. Tata instalira (dvaput klik → "More info" → "Run anyway")
-4. Gotovo! Od sada **auto-update radi automatski**.
-
----
-
-## B) SLANJE UPDATEA (svaki put nakon promjena)
-
-Kad napraviš promjene u kodu, tata ih dobije automatski. Evo koraka:
-
-### 1. Bump verziju (obavezno!)
-
-Uredi **3 mjesta**:
-
-```
-engleski/package.json       →  "version": "1.1.0"
-engleski/engleski/js/app.js →  const APP_VERSION = '1.1.0';
-```
-
-Verzioniranje: `1.0.0` → `1.1.0` (novi feature) ili `1.0.1` (bugfix)
-
-### 2. Publish
+## Pokretanje desktop aplikacije u development načinu
 
 ```powershell
-cd c:\Users\kalinika\Documents\karlolegend\engleski
-$env:GH_TOKEN = "TVOJ_GITHUB_PAT_TOKEN_OVDJE"
-npm run publish
+npm start
 ```
 
-### 3. To je sve!
+Development način ne pokušava instalirati automatska ažuriranja. Greške renderera ispisuju se u terminal.
 
-Kad tata sljedeći put otvori TalkTata:
-1. Aplikacija tiho provjerava GitHub Releases u pozadini
-2. Ako postoji nova verzija → automatski se download-a
-3. Pojavi se dialog: "✅ Ažuriranje spremno! Instaliraj sada"
-4. Tata klikne "Instaliraj" → app se restarta s novom verzijom
-5. **Tata ne mora ništa skinuti ručno** — sve automatski
+## Izrada Windows instalera
 
----
-
-## C) KAKO TO RADI (tehničko objašnjenje)
-
-```
-TI (developer)                    GITHUB                    TATA (korisnik)
-═══════════════                   ══════                    ═══════════════
-npm run publish ──────────────→ GitHub Releases            
-                                  (upload .exe +            
-                                   latest.yml)              
-                                       │                    
-                                       │←──── checkForUpdates()
-                                       │                    (svaki put kad otvori app)
-                                       │                    
-                                       │────→ download u pozadini
-                                       │                    
-                                       │────→ "Instaliraj sada" dialog
-                                       │                    
-                                       └────→ quitAndInstall()
-                                              (restarta app s novom verzijom)
+```powershell
+npm run build:installer
 ```
 
-**electron-updater** koristi `latest.yml` datoteku na GitHub Releases da provjeri
-ima li nova verzija. Ako ima, download-a novi installer u temp folder i zamijeni
-staru verziju kad korisnik klikne "Instaliraj".
+Rezultat se nalazi u mapi `dist/`, primjerice:
 
----
+```text
+dist/TalkTata-1.1.0-x64.exe
+```
 
-## FAQ
+Installer koristi asistirani NSIS tok: korisnik može odabrati lokaciju, stvara se Start Menu prečac i, prema izboru instalacije, desktop prečac. Deinstalacija namjerno ne briše spremljeni napredak.
 
-**Q: Windows Defender / SmartScreen blokira?**
-A: Normalno za unsigned .exe. "More info" → "Run anyway". Za potpuno čistu instalaciju
-treba code signing certificate ($200-400/god) — za osobni projekt nepotrebno.
+## Portable build
 
-**Q: Tata nema internet, hoće li app raditi?**
-A: Da! App radi 100% offline. Update check tiho fail-a i pokušava opet sljedeći put.
+```powershell
+npm run build:portable
+```
 
-**Q: Mogu li vidjeti što je objavljeno?**
-A: Da → `https://github.com/TVOJ_USERNAME/talktata/releases`
+Portable izdanje služi za ručno testiranje. Ne treba ga koristiti kao glavni kanal za automatska ažuriranja.
 
-**Q: Kako ručno poslati .exe bez auto-update?**
-A: `npm run build` (umjesto `publish`) → pošalji `dist/TalkTata Setup X.X.X.exe` ručno.
+## GitHub Actions build
 
-**Q: Aplikacija je prespora?**
-A: Electron šalje Chromium. Minimum 4 GB RAM-a i Windows 10+.
+Workflow `.github/workflows/windows-build.yml` automatski:
+
+1. instalira ovisnosti na čistom Windows runneru
+2. pokreće `npm run check`
+3. gradi NSIS `.exe`
+4. sprema installer kao GitHub Actions artifact na 14 dana
+
+Build se pokreće na pull requestu, na promjenama grana `main` i `fix/**`, ručno te na tagovima `v*`.
+
+## Objavljivanje nove verzije
+
+Prije objave promijeni verziju u:
+
+- `package.json`
+- `engleski/version.json`
+
+Zatim provjeri i commitaj promjene:
+
+```powershell
+npm install
+npm run check
+git add .
+git commit -m "Release TalkTata v1.2.0"
+git push
+```
+
+Za službeni GitHub Release napravi i pošalji tag:
+
+```powershell
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+Tag workflow koristi ugrađeni `GITHUB_TOKEN`, gradi installer i objavljuje update datoteke. Lokalni osobni pristupni token nije potreban za standardni CI release.
+
+## Ponašanje bez mikrofona ili zvuka
+
+- bez mikrofona: izgovor se vježba ručnom samoprocjenom
+- odbijena dozvola: aplikacija prelazi na isti ručni način, bez beskonačnog retry loopa
+- bez TTS glasa: prikazuje se tekst fraze
+- bez AudioContexta ili audio izlaza: zvučni efekti se preskaču
+- bez interneta: lekcije i lokalno spremanje nastavljaju raditi; samo provjera ažuriranja i mrežno prepoznavanje govora mogu biti nedostupni
+
+Na dnu aplikacije pojavljuje se kratka obavijest o aktivnom prilagođenom načinu i gumb za ponovnu provjeru uređaja.
+
+## Dijagnostika
+
+Ako desktop aplikacija ne otvori sučelje, Electron prikazuje jasnu poruku o nedostajućoj ili oštećenoj datoteci. Ako renderer prestane raditi, korisnik može ponovno učitati sučelje bez namjernog brisanja spremljenog napretka.
+
+Za lokalni debug pokreni:
+
+```powershell
+npm start
+```
+
+Zatim kopiraj cijeli terminalski izlaz, ne samo posljednju liniju.

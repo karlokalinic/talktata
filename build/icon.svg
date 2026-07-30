@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">TalkTata</title>
+  <desc id="desc">Otvorena knjiga s govornim oblačićem i inicijalima TT.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6f3f24"/>
+      <stop offset="0.52" stop-color="#b36e3f"/>
+      <stop offset="1" stop-color="#d3aa4d"/>
+    </linearGradient>
+    <linearGradient id="page" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffdf7"/>
+      <stop offset="1" stop-color="#eadfc9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="26" flood-color="#1d120c" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="url(#background)"/>
+  <circle cx="804" cy="206" r="102" fill="#f8df83" opacity="0.22"/>
+  <circle cx="208" cy="808" r="156" fill="#401f14" opacity="0.12"/>
+  <g filter="url(#shadow)">
+    <path d="M174 320c116-42 226-22 338 66v390c-112-72-222-92-338-52z" fill="url(#page)"/>
+    <path d="M850 320c-116-42-226-22-338 66v390c112-72 222-92 338-52z" fill="url(#page)"/>
+    <path d="M512 386v390" stroke="#b2884c" stroke-width="18" stroke-linecap="round"/>
+    <path d="M198 346c106-25 204 0 286 70" fill="none" stroke="#d3c09d" stroke-width="18" stroke-linecap="round"/>
+    <path d="M826 346c-106-25-204 0-286 70" fill="none" stroke="#d3c09d" stroke-width="18" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(300 420)">
+    <path d="M0 52c0-29 23-52 52-52h320c29 0 52 23 52 52v148c0 29-23 52-52 52H210l-78 72 16-72H52c-29 0-52-23-52-52z" fill="#55301f"/>
+    <text x="212" y="164" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="142" font-weight="800" letter-spacing="-10" fill="#fff8e7">TT</text>
+  </g>
+</svg>

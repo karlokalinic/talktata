@@ -1,63 +1,75 @@
-# Engleski za Tatu
+# TalkTata
 
-Static English-learning web app for a Croatian beginner, built around practical travel phrases, short lessons, review, and simple gamification.
+Interaktivni tečaj engleskog jezika za hrvatske početnike, dostupan kao statična web-aplikacija i Windows desktop aplikacija.
 
-## Project structure
+## Ključno ponašanje
 
-- `engleski/` - the actual app
-- `engleski/index.html` - main app entry point
-- `engleski/css/style.css` - styling
-- `engleski/js/data.js` - lesson and achievement data
-- `engleski/js/app.js` - app logic
-- `claude/` - curriculum and product skills
-- `index.html` - root redirect for static hosting from repository root
+TalkTata je local-first i mora ostati prohodan bez posebnog hardvera:
 
-## Run locally
+- mikrofon nije obavezan
+- odbijena dozvola za mikrofon ne blokira lekciju
+- bez mikrofona koristi se ručna samoprocjena izgovora
+- bez dostupnog TTS glasa fraza se prikazuje tekstualno
+- bez audio izlaza ili Web Audio podrške preskaču se zvučni efekti
+- bez interneta nastavljaju raditi lekcije i lokalno spremanje napretka
 
-Open `engleski/index.html` directly in a browser, or serve the repository root with any static server.
+## Struktura projekta
 
-Example with Python:
+- `engleski/` — web-aplikacija i sadržaj tečaja
+- `engleski/index.html` — glavni renderer
+- `engleski/css/style.css` — izgled i responsive pravila
+- `engleski/js/data.js` — lekcije, fraze i postignuća
+- `engleski/js/app.js` — postojeća aplikacijska logika
+- `engleski/js/runtime-compat.js` — fallbackovi za mikrofon, TTS, audio i runtime greške
+- `electron/main.js` — desktop prozor, dozvole, navigacija i updater
+- `electron/preload.js` — ograničeni sigurni IPC bridge
+- `build/icon.svg` — master ikona za Windows installer
+- `scripts/validate-build.js` — statička provjera prije pokretanja/builda
+- `.github/workflows/windows-build.yml` — čisti Windows CI build instalera
+
+## Lokalno pokretanje web-verzije
+
+Iz korijena repozitorija:
 
 ```powershell
 python -m http.server 8000
 ```
 
-Then open:
+Zatim otvori `http://localhost:8000/engleski/`.
 
-- `http://localhost:8000/`
-- or `http://localhost:8000/engleski/`
+## Desktop development
 
-## Deployment
+Zahtijeva Node.js 20 ili noviji.
 
-This repository is set up to work as a static site.
+```powershell
+npm install
+npm start
+```
 
-### Vercel
+`npm start` prvo pokreće validaciju, zatim Electron.
 
-- Import the repository
-- No build command required
-- No output directory required
-- Deploy from the repository root
+## Provjera projekta
 
-### Netlify
+```powershell
+npm run check
+```
 
-- New site from Git
-- Publish directory: repository root
-- No build command required
+Provjeravaju se sintaksa, verzije, lokalni HTML resursi, installer inputi i obavezne runtime datoteke.
 
-### Cloudflare Pages
+## Windows installer
 
-- Connect the repository
-- No build command required
-- Deploy the repository root as static files
+```powershell
+npm run build:installer
+```
 
-### GitHub Pages
+Izlaz se nalazi u `dist/`. Installer je asistirani NSIS paket s hrvatskim instalacijskim tokom i izborom lokacije.
 
-- Publish from the repository root branch contents
-- The root `index.html` forwards users into `engleski/`
+Detalji za build i release nalaze se u `BUILD_INSTRUCTIONS.md`.
 
-## Notes
+## Automatski build
 
-- The app is intentionally framework-free and build-free.
-- `engleski/js/data.js` must load before `engleski/js/app.js`.
-- Speech recognition support depends on browser support and usually requires HTTPS.
-- Text-to-speech availability depends on installed browser voices.
+Svaki pull request i push na `main` ili `fix/**` granu pokreće GitHub Actions Windows build. Uspješan workflow sprema stvarni `.exe` kao artifact. Tag oblika `v1.2.0` pokreće release build.
+
+## Deployment web-verzije
+
+Repozitorij ostaje kompatibilan sa statičnim hostingom. `engleski/js/data.js` mora se učitati prije `engleski/js/app.js`.

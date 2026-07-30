@@ -1,133 +1,324 @@
-const { app, BrowserWindow, Menu, shell, ipcMain, dialog } = require('electron');
+'use strict';
+
+const { app, BrowserWindow, Menu, shell, ipcMain, dialog, session } = require('electron');
 const { autoUpdater } = require('electron-updater');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
+const { pathToFileURL } = require('node:url');
 
-// Prevent multiple instances
+const APP_TITLE = 'TalkTata';
+const APP_REPOSITORY_URL = 'https://github.com/karlokalinic/talktata';
+const RUNTIME_SCRIPT = 'js/runtime-compat.js';
+
 const gotLock = app.requestSingleInstanceLock();
-if (!gotLock) { app.quit(); process.exit(0); }
+if (!gotLock) {
+    app.quit();
+    process.exit(0);
+}
 
-let mainWindow;
+let mainWindow = null;
+let updaterReady = false;
 
-// ─── Auto-Updater Setup ────────────────────────────────────────────────────
-autoUpdater.autoDownload = true;        // Download in background
-autoUpdater.autoInstallOnAppQuit = true; // Install when user quits
+function isTrustedRenderer(webContents, candidateUrl = '') {
+    if (!mainWindow || webContents !== mainWindow.webContents) return false;
+    try {
+        const parsed = new URL(candidateUrl || webContents.getURL());
+        return parsed.protocol === 'file:';
+    } catch (_) {
+        return false;
+    }
+}
 
-autoUpdater.on('update-available', (info) => {
-    if (mainWindow) {
-        mainWindow.webContents.send('update-available', {
+function configureMediaPermissions() {
+    const defaultSession = session.defaultSession;
+
+    defaultSession.setPermissionCheckHandler((webContents, permission, requestingOrigin, details = {}) => {
+        if (permission !== 'media') return false;
+        if (!isTrustedRenderer(webContents, details.requestingUrl || requestingOrigin || '')) return false;
+        return !details.mediaType || details.mediaType === 'audio' || details.mediaType === 'unknown';
+    });
+
+    defaultSession.setPermissionRequestHandler((webContents, permission, callback, details = {}) => {
+        if (permission !== 'media' || !isTrustedRenderer(webContents, details.requestingUrl || '')) {
+            callback(false);
+            return;
+        }
+
+        const requestedTypes = Array.isArray(details.mediaTypes) ? details.mediaTypes : [];
+        const requestsVideo = requestedTypes.includes('video');
+        const requestsAudio = requestedTypes.length === 0 || requestedTypes.includes('audio');
+        callback(requestsAudio && !requestsVideo);
+    });
+}
+
+function buildRuntimeHtml() {
+    const appDirectory = path.join(__dirname, '..', 'engleski');
+    const sourcePath = path.join(appDirectory, 'index.html');
+    const runtimePath = path.join(appDirectory, RUNTIME_SCRIPT);
+
+    if (!fs.existsSync(sourcePath)) throw new Error(`Missing renderer entry: ${sourcePath}`);
+    if (!fs.existsSync(runtimePath)) throw new Error(`Missing compatibility layer: ${runtimePath}`);
+
+    const source = fs.readFileSync(sourcePath, 'utf8');
+    const appScriptTag = '<script src="js/app.js"></script>';
+    if (!source.includes(appScriptTag)) {
+        throw new Error('Cannot inject runtime compatibility layer: app.js script tag was not found.');
+    }
+
+    const baseHref = pathToFileURL(`${appDirectory}${path.sep}`).href;
+    const cacheKey = encodeURIComponent(app.getVersion());
+    const withBase = source.replace('<head>', `<head>\n    <base href="${baseHref}">`);
+    const withRuntime = withBase.replace(
+        appScriptTag,
+        `${appScriptTag}\n    <script src="${RUNTIME_SCRIPT}?v=${cacheKey}"></script>`,
+    );
+
+    const runtimeDirectory = path.join(app.getPath('userData'), 'runtime');
+    fs.mkdirSync(runtimeDirectory, { recursive: true });
+    const runtimeEntry = path.join(runtimeDirectory, 'index.html');
+    fs.writeFileSync(runtimeEntry, withRuntime, 'utf8');
+    return runtimeEntry;
+}
+
+function sendToRenderer(channel, payload) {
+    if (!mainWindow || mainWindow.isDestroyed()) return;
+    mainWindow.webContents.send(channel, payload);
+}
+
+function configureUpdater() {
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.allowPrerelease = false;
+
+    autoUpdater.on('checking-for-update', () => {
+        sendToRenderer('update-status', { state: 'checking' });
+    });
+
+    autoUpdater.on('update-available', info => {
+        sendToRenderer('update-available', {
             version: info.version,
             releaseNotes: info.releaseNotes || '',
         });
-    }
-});
+    });
 
-autoUpdater.on('update-downloaded', (info) => {
-    if (mainWindow) {
-        mainWindow.webContents.send('update-downloaded', {
-            version: info.version,
+    autoUpdater.on('update-not-available', info => {
+        sendToRenderer('update-status', {
+            state: 'current',
+            version: info?.version || app.getVersion(),
         });
+    });
+
+    autoUpdater.on('download-progress', progress => {
+        sendToRenderer('update-status', {
+            state: 'downloading',
+            percent: Math.round(progress.percent || 0),
+        });
+    });
+
+    autoUpdater.on('update-downloaded', info => {
+        sendToRenderer('update-downloaded', { version: info.version });
+    });
+
+    autoUpdater.on('error', error => {
+        const message = error?.message || String(error);
+        console.warn('Auto-updater error:', message);
+        sendToRenderer('update-error', { message });
+    });
+
+    updaterReady = true;
+}
+
+async function checkForUpdates() {
+    if (!app.isPackaged || !updaterReady) return;
+    try {
+        await autoUpdater.checkForUpdatesAndNotify();
+    } catch (error) {
+        console.warn('Update check failed:', error?.message || error);
     }
-});
+}
 
-autoUpdater.on('error', (err) => {
-    // Fail silently — user is offline or no releases exist yet
-    console.log('Auto-updater error:', err.message);
-});
-
-// When renderer asks to install now
-ipcMain.on('install-update', () => {
-    autoUpdater.quitAndInstall(false, true);
-});
+async function loadRenderer() {
+    if (!mainWindow) return;
+    try {
+        const runtimeEntry = buildRuntimeHtml();
+        await mainWindow.loadFile(runtimeEntry);
+    } catch (error) {
+        console.error('Renderer load failed:', error);
+        await dialog.showMessageBox({
+            type: 'error',
+            title: 'TalkTata se ne može pokrenuti',
+            message: 'Datoteke aplikacije nisu ispravne ili nisu potpuno instalirane.',
+            detail: error?.message || String(error),
+            buttons: ['Zatvori'],
+        });
+        app.quit();
+    }
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1280,
         height: 800,
-        minWidth: 400,
-        minHeight: 600,
-        title: 'TalkTata — KarloLegend',
-        icon: path.join(__dirname, '..', 'engleski', 'icons', 'icon-256.png'),
+        minWidth: 420,
+        minHeight: 560,
+        title: APP_TITLE,
+        show: false,
+        backgroundColor: '#f5f0e8',
+        autoHideMenuBar: true,
+        useContentSize: true,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
             sandbox: true,
+            spellcheck: false,
+            backgroundThrottling: false,
             preload: path.join(__dirname, 'preload.js'),
         },
-        show: false,
-        backgroundColor: '#f5f0e8',
-        autoHideMenuBar: true,
     });
 
-    // Load the app
-    mainWindow.loadFile(path.join(__dirname, '..', 'engleski', 'index.html'));
-
-    // Show window when ready (avoids white flash)
     mainWindow.once('ready-to-show', () => {
+        if (!mainWindow || mainWindow.isDestroyed()) return;
         mainWindow.show();
+        mainWindow.focus();
     });
 
-    // Open external links in system browser
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        if (url.startsWith('http:') || url.startsWith('https:')) {
-            shell.openExternal(url);
-        }
+        try {
+            const parsed = new URL(url);
+            if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+                void shell.openExternal(parsed.toString());
+            }
+        } catch (_) {}
         return { action: 'deny' };
+    });
+
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        if (url.startsWith('file:')) return;
+        event.preventDefault();
+        try {
+            const parsed = new URL(url);
+            if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+                void shell.openExternal(parsed.toString());
+            }
+        } catch (_) {}
+    });
+
+    mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedUrl, isMainFrame) => {
+        if (!isMainFrame || errorCode === -3) return;
+        console.error('Renderer failed to load:', { errorCode, errorDescription, validatedUrl });
+    });
+
+    mainWindow.webContents.on('render-process-gone', async (_event, details) => {
+        console.error('Renderer process ended:', details);
+        if (!mainWindow || mainWindow.isDestroyed()) return;
+        const result = await dialog.showMessageBox(mainWindow, {
+            type: 'error',
+            title: 'TalkTata se neočekivano zaustavio',
+            message: 'Sučelje aplikacije prestalo je raditi.',
+            detail: `Razlog: ${details.reason}. Napredak spremljen prije kvara ostaje sačuvan.`,
+            buttons: ['Ponovno učitaj', 'Zatvori'],
+            defaultId: 0,
+            cancelId: 1,
+        });
+        if (result.response === 0) await loadRenderer();
+        else app.quit();
+    });
+
+    mainWindow.on('unresponsive', async () => {
+        if (!mainWindow || mainWindow.isDestroyed()) return;
+        const result = await dialog.showMessageBox(mainWindow, {
+            type: 'warning',
+            title: 'TalkTata ne odgovara',
+            message: 'Aplikacija trenutačno ne odgovara.',
+            buttons: ['Pričekaj', 'Ponovno učitaj'],
+            defaultId: 0,
+            cancelId: 0,
+        });
+        if (result.response === 1) await loadRenderer();
     });
 
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
+
+    void loadRenderer();
 }
 
-// Simple menu bar
-const menuTemplate = [
-    {
-        label: 'TalkTata',
-        submenu: [
-            { label: 'O aplikaciji', role: 'about' },
-            { type: 'separator' },
-            {
-                label: 'Resetiraj napredak',
-                click: () => {
-                    if (mainWindow) {
-                        mainWindow.webContents.executeJavaScript('if (confirm("Obrisati sav napredak?")) Storage.reset();');
-                    }
-                }
-            },
-            { type: 'separator' },
-            { label: 'Zatvori', role: 'quit' },
-        ],
-    },
-    {
-        label: 'Prikaz',
-        submenu: [
-            { label: 'Povećaj', role: 'zoomIn' },
-            { label: 'Smanji', role: 'zoomOut' },
-            { label: 'Normalna veličina', role: 'resetZoom' },
-            { type: 'separator' },
-            { label: 'Cijeli ekran', role: 'togglefullscreen' },
-        ],
-    },
-    {
-        label: 'Pomoć',
-        submenu: [
-            {
-                label: 'Otvori GitHub',
-                click: () => shell.openExternal('https://github.com/KarloLegend/karlolegend'),
-            },
-            { type: 'separator' },
-            { label: 'DevTools', role: 'toggleDevTools' },
-        ],
-    },
-];
+function buildMenu() {
+    const template = [
+        {
+            label: 'TalkTata',
+            submenu: [
+                {
+                    label: 'O aplikaciji',
+                    click: () => dialog.showMessageBox(mainWindow, {
+                        type: 'info',
+                        title: `TalkTata ${app.getVersion()}`,
+                        message: `TalkTata ${app.getVersion()}`,
+                        detail: 'Interaktivni tečaj engleskog jezika. Mikrofon i zvuk su opcionalni.',
+                        buttons: ['U redu'],
+                    }),
+                },
+                { type: 'separator' },
+                {
+                    label: 'Resetiraj napredak',
+                    click: () => {
+                        if (!mainWindow) return;
+                        void mainWindow.webContents.executeJavaScript(
+                            'if (confirm("Obrisati sav napredak?")) Storage.reset();',
+                            true,
+                        ).catch(error => console.warn('Reset command failed:', error.message));
+                    },
+                },
+                { type: 'separator' },
+                { label: 'Zatvori', role: 'quit' },
+            ],
+        },
+        {
+            label: 'Prikaz',
+            submenu: [
+                { label: 'Povećaj', role: 'zoomIn' },
+                { label: 'Smanji', role: 'zoomOut' },
+                { label: 'Normalna veličina', role: 'resetZoom' },
+                { type: 'separator' },
+                { label: 'Cijeli ekran', role: 'togglefullscreen' },
+            ],
+        },
+        {
+            label: 'Pomoć',
+            submenu: [
+                { label: 'Otvori projekt', click: () => void shell.openExternal(APP_REPOSITORY_URL) },
+                ...(app.isPackaged ? [] : [{ type: 'separator' }, { label: 'Razvojni alati', role: 'toggleDevTools' }]),
+            ],
+        },
+    ];
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
+ipcMain.handle('get-app-info', () => ({
+    version: app.getVersion(),
+    platform: process.platform,
+    arch: process.arch,
+    packaged: app.isPackaged,
+}));
+
+ipcMain.on('renderer-error', (_event, payload = {}) => {
+    console.error('[Renderer]', payload.scope || 'unknown', payload.message || '', payload.stack || '');
+});
+
+ipcMain.on('install-update', () => {
+    if (!app.isPackaged || !updaterReady) return;
+    autoUpdater.quitAndInstall(false, true);
+});
 
 app.whenReady().then(() => {
-    const menu = Menu.buildFromTemplate(menuTemplate);
-    Menu.setApplicationMenu(menu);
+    if (process.platform === 'win32') app.setAppUserModelId('com.karlolegend.talktata');
+    configureUpdater();
+    configureMediaPermissions();
     createWindow();
+    buildMenu();
 
-    // Check for updates 5 seconds after launch (silent if offline / no releases)
-    setTimeout(() => autoUpdater.checkForUpdatesAndNotify(), 5000);
+    setTimeout(() => void checkForUpdates(), 8000);
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -135,10 +326,10 @@ app.whenReady().then(() => {
 });
 
 app.on('second-instance', () => {
-    if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
-        mainWindow.focus();
-    }
+    if (!mainWindow) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
 });
 
 app.on('window-all-closed', () => {
