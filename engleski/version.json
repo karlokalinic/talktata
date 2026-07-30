@@ -1,4 +1,4 @@
 {
-  "version": "1.0.0",
-  "changelog": ""
+  "version": "1.1.0",
+  "changelog": "Pouzdan rad bez mikrofona ili zvuka, stabilnije prepoznavanje govora, sigurniji Electron runtime i obnovljeni Windows installer."
 }
