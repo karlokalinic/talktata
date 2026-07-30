@@ -1,51 +1,71 @@
 {
   "name": "talktata",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Interaktivni tečaj engleskog jezika za početnike — TalkTata",
   "main": "electron/main.js",
   "author": "KarloLegend",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder --win",
-    "build:portable": "electron-builder --win portable",
-    "build:installer": "electron-builder --win nsis",
-    "build:all": "electron-builder --win nsis portable",
-    "publish": "electron-builder --win --publish always"
+    "check": "node scripts/validate-build.js",
+    "start": "npm run check && electron .",
+    "build": "npm run check && electron-builder --win",
+    "build:portable": "npm run check && electron-builder --win portable",
+    "build:installer": "npm run check && electron-builder --win nsis",
+    "build:all": "npm run check && electron-builder --win nsis portable",
+    "publish": "npm run check && electron-builder --win nsis --publish always"
   },
   "build": {
     "appId": "com.karlolegend.talktata",
     "productName": "TalkTata",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
     "copyright": "Copyright © 2026 KarloLegend",
+    "asar": true,
+    "compression": "maximum",
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "build"
     },
     "files": [
       "electron/**/*",
-      "engleski/**/*"
+      "engleski/**/*",
+      "package.json"
     ],
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
-      "icon": "engleski/icons/icon-256.png"
+      "icon": "build/icon.svg"
     },
     "nsis": {
-      "oneClick": true,
-      "allowToChangeInstallationDirectory": false,
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "TalkTata",
-      "installerLanguages": ["en_US"],
-      "language": "1033"
+      "installerLanguages": [
+        "hr_HR",
+        "en_US"
+      ],
+      "language": "1050",
+      "displayLanguageSelector": false,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
     },
     "publish": {
       "provider": "github",
       "owner": "karlokalinic",
-      "repo": "talktata"
+      "repo": "talktata",
+      "releaseType": "release"
     }
   },
   "dependencies": {
