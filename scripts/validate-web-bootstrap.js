@@ -20,6 +20,26 @@ function requireText(source, expected, label) {
     if (!source.includes(expected)) errors.push(`${label} ne sadrži ${expected}`);
 }
 
+function validateScript(name, source) {
+    try {
+        new vm.Script(source, { filename: name });
+    } catch (error) {
+        errors.push(`${name} ima sintaksnu grešku: ${error.message}`);
+    }
+}
+
+function validateInlineScripts(name, html) {
+    const pattern = /<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi;
+    let match;
+    let index = 0;
+    while ((match = pattern.exec(html))) {
+        const source = match[1].trim();
+        if (!source) continue;
+        index += 1;
+        validateScript(`${name}#inline-${index}`, source);
+    }
+}
+
 const rootIndex = read('index.html');
 const bootstrap = read('engleski/bootstrap.html');
 const manifestSource = read('engleski/manifest.json');
@@ -41,16 +61,10 @@ try {
     errors.push(`manifest.json nije ispravan JSON: ${error.message}`);
 }
 
-for (const [name, source] of [
-    ['engleski/sw.js', serviceWorker],
-    ['engleski/js/runtime-compat.js', runtime],
-]) {
-    try {
-        new vm.Script(source, { filename: name });
-    } catch (error) {
-        errors.push(`${name} ima sintaksnu grešku: ${error.message}`);
-    }
-}
+validateScript('engleski/sw.js', serviceWorker);
+validateScript('engleski/js/runtime-compat.js', runtime);
+validateInlineScripts('index.html', rootIndex);
+validateInlineScripts('engleski/bootstrap.html', bootstrap);
 
 if (errors.length) {
     errors.forEach(error => console.error(`ERROR: ${error}`));
