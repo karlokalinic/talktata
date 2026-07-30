@@ -1,7 +1,7 @@
 {
   "name": "talktata",
   "version": "1.1.0",
-  "description": "Interaktivni tečaj engleskog jezika za početnike — TalkTata",
+  "description": "Interaktivni tečaj engleskog jezika za početnike - TalkTata",
   "main": "electron/main.js",
   "author": "KarloLegend",
   "license": "MIT",
@@ -59,7 +59,8 @@
       "language": "1050",
       "displayLanguageSelector": false,
       "runAfterFinish": true,
-      "deleteAppDataOnUninstall": false
+      "deleteAppDataOnUninstall": false,
+      "warningsAsErrors": false
     },
     "publish": {
       "provider": "github",
