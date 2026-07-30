@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalkTata</title>
+    <meta name="description" content="Interaktivni tečaj engleskog jezika za početnike. Od nule do razgovora.">
+    <meta name="theme-color" content="#f5f0e8">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root { color-scheme: light; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: #f5f0e8;
+            color: #2c2416;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        .loader { max-width: 560px; text-align: center; line-height: 1.55; }
+        .loader h1 { margin: 0 0 10px; }
+        .loader p { margin: 8px 0; }
+        .error { color: #8d2f2f; }
+        button {
+            margin-top: 14px;
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 16px;
+            background: #8b5e34;
+            color: white;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <main class="loader" aria-live="polite">
+        <h1>TalkTata</h1>
+        <p id="status">Učitavam prilagođenu verziju aplikacije…</p>
+    </main>
+
+    <script>
+        (() => {
+            'use strict';
+
+            const status = document.getElementById('status');
+
+            function showFailure(error) {
+                console.error('TalkTata bootstrap failed:', error);
+                status.className = 'error';
+                status.textContent = 'Aplikacija se nije mogla učitati. Provjerite vezu ili osvježite stranicu.';
+
+                const retry = document.createElement('button');
+                retry.type = 'button';
+                retry.textContent = 'Pokušaj ponovno';
+                retry.addEventListener('click', () => window.location.reload());
+                status.parentElement.appendChild(retry);
+            }
+
+            fetch('index.html', { cache: 'no-store' })
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.text();
+                })
+                .then(source => {
+                    const appScript = '<script src="js/app.js"><\/script>';
+                    if (!source.includes(appScript)) {
+                        throw new Error('Nedostaje očekivani app.js script tag.');
+                    }
+
+                    const runtimeScript = '<script src="js/runtime-compat.js?v=1.1.0"><\/script>';
+                    const enhancedSource = source.replace(appScript, `${appScript}\n    ${runtimeScript}`);
+
+                    document.open();
+                    document.write(enhancedSource);
+                    document.close();
+                })
+                .catch(showFailure);
+        })();
+    </script>
+</body>
+</html>
