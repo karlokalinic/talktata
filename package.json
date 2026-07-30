@@ -9,7 +9,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "node scripts/validate-build.js",
+    "check": "node scripts/validate-build.js && node scripts/validate-web-bootstrap.js",
     "start": "npm run check && electron .",
     "build": "npm run check && electron-builder --win",
     "build:portable": "npm run check && electron-builder --win portable",
