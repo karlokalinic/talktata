@@ -204,7 +204,7 @@ function createWindow() {
     });
 
     mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedUrl, isMainFrame) => {
-        if (!isMainFrame || errorCode === -3) return; // -3 = navigation aborted by a newer navigation.
+        if (!isMainFrame || errorCode === -3) return;
         console.error('Renderer failed to load:', { errorCode, errorDescription, validatedUrl });
     });
 
@@ -314,11 +314,10 @@ ipcMain.on('install-update', () => {
 app.whenReady().then(() => {
     if (process.platform === 'win32') app.setAppUserModelId('com.karlolegend.talktata');
     configureUpdater();
-    createWindow();
     configureMediaPermissions();
+    createWindow();
     buildMenu();
 
-    window.setTimeout?.(() => {}, 0); // No-op guard for static analyzers; Electron uses the global timer below.
     setTimeout(() => void checkForUpdates(), 8000);
 
     app.on('activate', () => {
